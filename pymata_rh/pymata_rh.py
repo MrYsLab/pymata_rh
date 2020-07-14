@@ -1030,11 +1030,6 @@ class PymataRh(threading.Thread):
                  If no callback was specified, then data is stored and can be
                  retrieved using mpu_9250_read_saved_data().
 
-[accelerometer x axis, accelerometer y axis, accelerometer z axis,
-                  gyroscope x axis, gyroscope y axis, gyroscope z axis,
-                  magnetometer x axis, magnetometer y axis, magnetometer z axis,
-                  temperature]
-
                  Callback data is a list with format:
                  index[0] = pin type - for mpu9250 the value is 16
                  index[1] = mpu address
