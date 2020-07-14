@@ -14,7 +14,7 @@
  along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
- This class exposes and implements the pymata4_rh API for the
+ This class exposes and implements the pymata_rh API for the
  RoboHAT MM1.
 
  The following table maps RoboHAT MM1 pin names
@@ -54,6 +54,8 @@
 """
 
 from collections import deque
+import datetime
+import logging
 import serial
 # noinspection PyPackageRequirements
 from serial.tools import list_ports
@@ -64,12 +66,15 @@ import sys
 import threading
 import time
 
-from pymata4_rh.pin_data import PinData
-from pymata4_rh.private_constants import PrivateConstants
+from pin_data import PinData
+from private_constants import PrivateConstants
+from mpu_9250.mpu_9250 import MPU9250
+import mpu_9250.mpu9250_constants as mpu_constants
+
 
 
 # noinspection PyPep8
-class Pymata4Rh(threading.Thread):
+class PymataRh(threading.Thread):
     """
     This class exposes and implements the PymataExpress Non-asyncio API.
     It uses threading to accommodate concurrency.
@@ -142,17 +147,22 @@ class Pymata4Rh(threading.Thread):
 
         self.the_data_receive_thread.daemon = True
 
-        # keep alive variables
-        self.keep_alive_interval = []
-        self.period = 0
-        self.margin = 0
-
-        # create a thread for the keep alives
-        self.the_keep_alive_thread = threading.Thread(target=self._send_keep_alive)
-        self.the_keep_alive_thread.daemon = True
+        self.i2c_configured = False
 
         # flag to allow the reporter and receive threads to run.
         self.run_event = threading.Event()
+
+        # mpu_9250 threading
+        self.mpu_9250_thread = threading.Thread(target=self._mpu_read_device)
+        self.mpu_9250_thread.daemon = True
+        self.mpu_9250_device = None
+        self.mpu_callback = None
+        self.mpu_last_value = []
+
+        self.mpu_read_delay = 0.3 # delay between reads
+
+        # flag to allow mpu_9250 to run
+        self.mpu_9250_run_event = threading.Event()
 
         # check to make sure that Python interpreter is version 3.7 or greater
         python_version = sys.version_info
@@ -222,6 +232,9 @@ class Pymata4Rh(threading.Thread):
         # This lock is used when the PinData object is update or contents
         # are retrieved
         self.the_pin_data_lock = threading.Lock()
+
+        # a lock for sending i2c commands
+        self.the_i2c_send_lock = threading.RLock()
 
         # a lock for the i2c map data structure
         self.the_i2c_map_lock = threading.Lock()
@@ -298,7 +311,7 @@ class Pymata4Rh(threading.Thread):
 
         self.the_reporter_thread.start()
         self.the_data_receive_thread.start()
-
+        self.mpu_9250_thread.start()
         # allow the threads to run
         self._run_threads()
 
@@ -410,6 +423,7 @@ class Pymata4Rh(threading.Thread):
 
                 # wait until the END_SYSEX comes back
                 i_am_here = self.serial_port.read_until(b'\xf7')
+
                 if not i_am_here:
                     continue
 
@@ -428,6 +442,7 @@ class Pymata4Rh(threading.Thread):
                     if i_am_here[2] == self.arduino_instance_id:
                         self.using_firmata_express = True
                         self.com_port = self.serial_port
+                        return
         except KeyboardInterrupt:
             raise RuntimeError('User Hit Control-C')
 
@@ -748,9 +763,9 @@ class Pymata4Rh(threading.Thread):
         The pin_type for i2c = 6
 
         """
-
-        self._i2c_read_request(address, register, number_of_bytes,
-                               PrivateConstants.I2C_READ, callback)
+        with self.the_i2c_send_lock:
+            self._i2c_read_request(address, register, number_of_bytes,
+                                   PrivateConstants.I2C_READ, callback)
 
     def i2c_read_continuous(self, address, register, number_of_bytes,
                             callback=None):
@@ -778,10 +793,10 @@ class Pymata4Rh(threading.Thread):
 
 
         """
-
-        self._i2c_read_request(address, register, number_of_bytes,
-                               PrivateConstants.I2C_READ_CONTINUOUSLY,
-                               callback)
+        with self.the_i2c_send_lock:
+            self._i2c_read_request(address, register, number_of_bytes,
+                                   PrivateConstants.I2C_READ_CONTINUOUSLY,
+                                   callback)
 
     def i2c_read_restart_transmission(self, address, register,
                                       number_of_bytes,
@@ -810,11 +825,11 @@ class Pymata4Rh(threading.Thread):
         The pin_type for i2c pins = 6
 
         """
-
-        self._i2c_read_request(address, register, number_of_bytes,
-                               PrivateConstants.I2C_READ
-                               | PrivateConstants.I2C_END_TX_MASK,
-                               callback)
+        with self.the_i2c_send_lock:
+            self._i2c_read_request(address, register, number_of_bytes,
+                                   PrivateConstants.I2C_READ
+                                   | PrivateConstants.I2C_END_TX_MASK,
+                                   callback)
 
     def _i2c_read_request(self, address, register, number_of_bytes, read_type,
                           callback=None):
@@ -851,16 +866,17 @@ class Pymata4Rh(threading.Thread):
                    result of read command
 
         """
-        if address not in self.i2c_map:
-            with self.the_i2c_map_lock:
-                self.i2c_map[address] = {'value': None, 'callback': callback}
-        if register is not None:
-            data = [address, read_type, register & 0x7f, (register >> 7) & 0x7f,
-                    number_of_bytes & 0x7f, (number_of_bytes >> 7) & 0x7f]
-        else:
-            data = [address, read_type, 
-                    number_of_bytes & 0x7f, (number_of_bytes >> 7) & 0x7f]
-        self._send_sysex(PrivateConstants.I2C_REQUEST, data)
+        with self.the_i2c_send_lock:
+            if address not in self.i2c_map:
+                with self.the_i2c_map_lock:
+                    self.i2c_map[address] = {'value': None, 'callback': callback}
+            if register is not None:
+                data = [address, read_type, register & 0x7f, (register >> 7) & 0x7f,
+                        number_of_bytes & 0x7f, (number_of_bytes >> 7) & 0x7f]
+            else:
+                data = [address, read_type,
+                        number_of_bytes & 0x7f, (number_of_bytes >> 7) & 0x7f]
+            self._send_sysex(PrivateConstants.I2C_REQUEST, data)
 
     def i2c_write(self, address, args):
         """
@@ -872,13 +888,210 @@ class Pymata4Rh(threading.Thread):
                      passed in as a list
 
         """
-        data = [address, PrivateConstants.I2C_WRITE]
-        for item in args:
-            item_lsb = item & 0x7f
-            data.append(item_lsb)
-            item_msb = (item >> 7) & 0x7f
-            data.append(item_msb)
-        self._send_sysex(PrivateConstants.I2C_REQUEST, data)
+        with self.the_i2c_send_lock:
+            data = [address, PrivateConstants.I2C_WRITE]
+            for item in args:
+                item_lsb = item & 0x7f
+                data.append(item_lsb)
+                item_msb = (item >> 7) & 0x7f
+                data.append(item_msb)
+            self._send_sysex(PrivateConstants.I2C_REQUEST, data)
+
+    def mpu_9250_calibrate(self, log=True):
+        """
+        This method will calibrate the device. This is a lengthy process
+        and may take about a minute to complete.
+
+        This method will:
+        1. Test if the mpu_9250 was initialized and if not, it will
+           initialize with the default values.
+        2. Print the current device settings.
+        3. Run the calibrations for both the calibrate_ak8963 and MPU6050.
+        4. Configure the device with the new settings.
+        5. Print the new device settings.
+
+        :param: logging - If set to true calibration data is logged to a file
+                          named mpu_calibration.log
+
+        :return: If an error is encountered a RunTimeError exception is raised.
+        """
+        if logging:
+            logging.basicConfig(filename='mpu_calibration.log', filemode='a', level=logging.DEBUG)
+            print('Configuration data being logged to mpu_calibration.log')
+
+        if not self.mpu_9250_device:
+            print('Initializing mpu9250')
+            self.mpu_9250_initialize()
+        print('Settings Before Calibration:')
+        if log:
+            logging.info('')
+            logging.info(f'Calibration Date: {datetime.datetime.now()}')
+            logging.info('Settings Before Calibration:')
+
+        print()
+        if log:
+            self._mpu_9250_get_current_settings(log=True)
+        else:
+            self._mpu_9250_get_current_settings(log=False)
+        print()
+        print('Calibrating ...')
+        print()
+        self.mpu_9250_device.calibrate()
+
+        print('Configuring with calibrated values...')
+        print()
+        self.mpu_9250_device.configure()
+        print()
+
+        print('Settings After Calibration:')
+        if log:
+            logging.info('Settings After Calibration:')
+        print()
+        if log:
+            self._mpu_9250_get_current_settings(log=True)
+        else:
+            self._mpu_9250_get_current_settings(log=False)
+
+        print()
+
+    def _mpu_9250_get_current_settings(self, log):
+        """
+        Retrieve and print the current mpu9250 settings
+
+        :return: Settings are printed to console
+        """
+        settings = self.mpu_9250_device.get_all_settings()
+        print(f'MPU Address: {settings[0]}  AK Address: {settings[1]}  '
+              f'Gyro Resolution: {settings[2]}  Accel Resolution: {settings[3]}  '
+              f'Mag Resolution: {settings[4]}')
+        print(f'Gyro Bias: {settings[5]}  Accel Bias: {settings[6]}')
+        print(f'Mag Calibration: {settings[7]}  Mag Scale: {settings[8]}  Mag Bias: {settings[9]}')
+        if log:
+            logging.info(f'MPU Address: {settings[0]}  AK Address: {settings[1]}  '
+                         f'Gyro Resolution: {settings[2]}  Accel Resolution: {settings[3]}  '
+                         f'Mag Resolution: {settings[4]}')
+            logging.info(f'Gyro Bias: {settings[5]}  Accel Bias: {settings[6]}')
+            logging.info(f'Mag Calibration: {settings[7]}  Mag Scale: {settings[8]}  Mag Bias: {settings[9]}')
+
+    def mpu_9250_initialize(self, address_ak=mpu_constants.AK8963_ADDRESS,
+                            address_mpu=mpu_constants.MPU9250_ADDRESS_68,
+                            g_fs=mpu_constants.GFS_500,
+                            a_fs=mpu_constants.AFS_2G,
+                            m_fs=mpu_constants.AK8963_BIT_16,
+                            mode=mpu_constants.AK8963_MODE_C8HZ,
+                            callback=None
+                            ):
+        """
+        This method instantiates an mpu_9250 object.
+        It also creates the thread to manage the mpu_9250 data retrieval.
+
+        :param address_ak: AK8963 I2C address (default:AK8963_ADDRESS[0x0C]).
+
+        :param address_mpu:  MPU-9250 I2C address (default:MPU9050_ADDRESS_68[0x68]).
+
+        :param g_fs: Gyroscope full scale select (default:GFS_2000[2000dps]).
+
+        :param a_fs: Accelerometer full scale select (default:AFS_16G[16g]).
+
+        :param m_fs: Magnetometer scale select (default:AK8963_BIT_16[16bit])
+
+        :param mode: Magnetometer mode select (default:AK8963_MODE_C8HZ)
+
+        :param callback: Callback method that will receive mpu data frames
+
+        """
+        self.mpu_callback = callback
+
+        # make sure that we initialize i2c mode
+        self.set_pin_mode_i2c()
+
+        self.mpu_9250_device = MPU9250(self, address_ak, address_mpu,
+                                       g_fs, a_fs, m_fs, mode,
+                                       mag_scale=(1, 1, 1), g_bias=(0, 0, 0),
+                                       a_bias=(0, 0, 0), m_bias=(0, 0, 0))
+        self.mpu_callback = callback
+
+    def mpu_9250_read_data(self, mode=mpu_constants.MPU9250_READ_CONTINUOUS_ON,
+                           continuous_delay=0.3):
+        """
+        Read and report mpu_9250 data for accelerometer, gyroscope,
+        magnetometer, and device temperature.
+
+        :param mode: MPU9250_READ_CONTINUOUS_ON - data is read continuously.
+
+                     MPU9250_READ_CONTINUOUS_OFF - turn off continuous reads
+
+        :param continuous_delay: Delay between reads
+
+        :return: For MPU9250_READ_CONTINUOUS_ON,
+                 if a callback was specified in mpu_9250_initialize(), then
+                 data returned is returned via callback.
+
+                 If no callback was specified, then data is stored and can be
+                 retrieved using mpu_9250_read_saved_data().
+
+[accelerometer x axis, accelerometer y axis, accelerometer z axis,
+                  gyroscope x axis, gyroscope y axis, gyroscope z axis,
+                  magnetometer x axis, magnetometer y axis, magnetometer z axis,
+                  temperature]
+
+                 Callback data is a list with format:
+                 index[0] = pin type - for mpu9250 the value is 16
+                 index[1] = mpu address
+                 index[2] = accelerometer x axis
+                 index[3] = accelerometer y axis
+                 index[4] = accelerometer z axis
+                 index[5] = gyroscope x axis
+                 index[6] = gyroscope y axis
+                 index[7] = gyroscope z axis
+                 index[8] = magnetometer x axis
+                 index[9] = magnetometer y axis
+                 index[10] = magnetometer z axis
+                 index[11] = temperature
+                 index[12] = timestamp
+
+        """
+        self.mpu_read_delay = continuous_delay
+        if mode == mpu_constants.MPU9250_READ_CONTINUOUS_ON:
+            self._mpu9250_thread_run()
+
+        elif mode == mpu_constants.MPU9250_READ_CONTINUOUS_OFF:
+            self._mpu9250_thread_stop()
+        else:
+            raise RuntimeError(f'Unknown mode passed to mpu_9250_read_data(). mode == {mode}')
+
+    def _mpu_read_device(self):
+        """
+        This is the thread code to continuously read the mpu9250
+        :return:
+        """
+
+        self.mpu_9250_run_event.wait()
+        print(f'running {self._mpu_9250_is_running()} sflag {self.shutdown_flag}')
+
+        while True:
+            mpu_data=[PrivateConstants.MPU9250, self.mpu_9250_device.address_mpu]
+            if self._mpu_9250_is_running() and not self.shutdown_flag:
+                mpu_data = mpu_data + self.mpu_9250_device.get_all_data()
+                mpu_data.append(time.time())
+                self.mpu_last_value = mpu_data
+                # print(mpu_data)
+                if self.mpu_callback:
+                    self.mpu_callback(mpu_data)
+                time.sleep(self.mpu_read_delay)
+            else:
+                continue
+
+    def mpu_9250_read_saved_data(self):
+        """
+        Retrieve and return the last data set read from the mpu_9250
+
+        :return: last read data in list form:
+
+                 or None if no data is available.
+        """
+        if self.mpu_9250_device.address_mpu:
+            return self.mpu_last_value
 
     def pwm_write(self, pin, value):
         """
@@ -1046,8 +1259,10 @@ class Pymata4Rh(threading.Thread):
               See i2c_read, i2c_read_continuous, or i2c_read_restart_transmission.
 
         """
-        data = [read_delay_time & 0x7f, (read_delay_time >> 7) & 0x7f]
-        self._send_sysex(PrivateConstants.I2C_CONFIG, data)
+        if not self.i2c_configured:
+            data = [read_delay_time & 0x7f, (read_delay_time >> 7) & 0x7f]
+            self._send_sysex(PrivateConstants.I2C_CONFIG, data)
+            self.i2c_configured = True
 
     def set_pin_mode_pwm_output(self, pin_number):
         """
@@ -1454,6 +1669,7 @@ class Pymata4Rh(threading.Thread):
         # reassemble the data from the firmata 2 byte format
         address = (data[0] & 0x7f) + (data[1] << 7)
 
+
         # if we have an entry in the i2c_map, proceed
         if address in self.i2c_map:
             with self.the_i2c_map_lock:
@@ -1574,18 +1790,6 @@ class Pymata4Rh(threading.Thread):
         else:
             self.sock.sendall(send_message)
 
-    def _send_keep_alive(self):
-        """
-        This is a the thread to continuously send keep alive messages
-        """
-        while True:
-            if self.period:
-                self._send_sysex(PrivateConstants.KEEP_ALIVE,
-                                 self.keep_alive_interval)
-                time.sleep(self.period - self.margin)
-            else:
-                break
-
     def _sonar_data(self, data):
         """
         This method handles the incoming sonar data message and stores
@@ -1668,8 +1872,18 @@ class Pymata4Rh(threading.Thread):
     def _is_running(self):
         return self.run_event.is_set()
 
+    def _mpu9250_thread_run(self):
+        self.mpu_9250_run_event.set()
+
+    def _mpu9250_thread_stop(self):
+        self.mpu_9250_run_event.clear()
+
+    def _mpu_9250_is_running(self):
+        return self.mpu_9250_run_event.is_set()
+
     def _stop_threads(self):
         self.run_event.clear()
+        self.mpu_9250_run_event.clear()
 
     def _reporter(self):
         """

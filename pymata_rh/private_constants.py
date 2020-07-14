@@ -111,6 +111,8 @@ class PrivateConstants:
     TONE = 0x0d  # Any pin in tone mode
     PIXY = 0x0e  # reserved for pixy camera mode
     DHT = 0x0f  # DHT sensor
+    MPU9250 = 0x10 # mpu
+    INA219 = 0x11 # current sensor
 
     IGNORE = 0x7f
 
