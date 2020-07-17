@@ -19,7 +19,7 @@ https://github.com/Intelligent-Vehicle-Perception/MPU-9250-Sensors-Data-Collect
 """
 
 import time
-from mpu_9250.mpu9250_constants import *
+from mpu_9250.mpu_9250_constants import *
 
 
 # noinspection PyMethodMayBeStatic

@@ -16,13 +16,10 @@
 """
 
 import time
-import sys
 from pymata_rh import pymata_rh
-import mpu_9250.mpu9250_constants as mpu_constants
-
 
 """
-ina219
+ina_219
 """
 
 def mycb(data):

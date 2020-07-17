@@ -66,11 +66,11 @@ import sys
 import threading
 import time
 
-from pin_data import PinData
-from private_constants import PrivateConstants
+from pymata_rh.pin_data import PinData
+from pymata_rh.private_constants import PrivateConstants
 from mpu_9250.mpu_9250 import MPU9250
-import mpu_9250.mpu9250_constants as mpu_constants
-from ina219 import INA219
+import mpu_9250.mpu_9250_constants as mpu_constants
+from ina_219.ina_219 import INA219
 
 
 # noinspection PyPep8
@@ -158,7 +158,7 @@ class PymataRh(threading.Thread):
         # callback function
         self.ina219_callback = None
 
-        # ina219 values - last values retrieved
+        # ina_219 values - last values retrieved
         self.ina_last_value_bus_voltage = []
         self.ina_last_value_bus_current = []
         self.ina_last_value_supply_voltage = []
@@ -928,7 +928,7 @@ class PymataRh(threading.Thread):
         # make sure that we initialize i2c mode
         self.set_pin_mode_i2c()
 
-        # instantiate ina219 and save callback
+        # instantiate ina_219 and save callback
         self.ina219 = INA219(self, shunt_ohms, max_expected_amps, address)
         self.ina219.configure(self.ina219.RANGE_16V, self.ina219.GAIN_AUTO)
         self.ina219_callback = callback
@@ -950,7 +950,7 @@ class PymataRh(threading.Thread):
 
     def ina_read_bus_voltage_last(self):
         """
-        Retrieve last bus voltage value read from the ina219.
+        Retrieve last bus voltage value read from the ina_219.
 
         :return: list: [pin_type=0x11, device_i2c_address, read_type=0 (bus voltage), units='V', timestamp]
         """
@@ -973,7 +973,7 @@ class PymataRh(threading.Thread):
 
     def ina_read_bus_current_last(self):
         """
-        Retrieve last supply voltage value read from the ina219.
+        Retrieve last supply voltage value read from the ina_219.
 
 
         :return: list:
