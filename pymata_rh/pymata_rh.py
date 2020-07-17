@@ -70,7 +70,7 @@ from pin_data import PinData
 from private_constants import PrivateConstants
 from mpu_9250.mpu_9250 import MPU9250
 import mpu_9250.mpu9250_constants as mpu_constants
-
+from ina219 import INA219
 
 
 # noinspection PyPep8
@@ -152,6 +152,19 @@ class PymataRh(threading.Thread):
         # flag to allow the reporter and receive threads to run.
         self.run_event = threading.Event()
 
+        # instance variable
+        self.ina219 = None
+
+        # callback function
+        self.ina219_callback = None
+
+        # ina219 values - last values retrieved
+        self.ina_last_value_bus_voltage = []
+        self.ina_last_value_bus_current = []
+        self.ina_last_value_supply_voltage = []
+        self.ina_last_value_shunt_voltage = []
+        self.ina_last_value_power = []
+
         # mpu_9250 threading
         self.mpu_9250_thread = threading.Thread(target=self._mpu_read_device)
         self.mpu_9250_thread.daemon = True
@@ -159,7 +172,7 @@ class PymataRh(threading.Thread):
         self.mpu_callback = None
         self.mpu_last_value = []
 
-        self.mpu_read_delay = 0.3 # delay between reads
+        self.mpu_read_delay = 0.3  # delay between reads
 
         # flag to allow mpu_9250 to run
         self.mpu_9250_run_event = threading.Event()
@@ -897,6 +910,166 @@ class PymataRh(threading.Thread):
                 data.append(item_msb)
             self._send_sysex(PrivateConstants.I2C_REQUEST, data)
 
+    # def ina_initialize(self, shunt_ohms=0.2, max_expected_amps=5.0,
+    def ina_initialize(self, shunt_ohms=0.1, max_expected_amps=0.2,
+                       address=0x40, callback=None):
+        # address=0x40, callback=None):
+        """
+        :param shunt_ohms:
+
+        :param max_expected_amps:
+
+        :param address:
+
+        :param callback:
+
+        """
+
+        # make sure that we initialize i2c mode
+        self.set_pin_mode_i2c()
+
+        # instantiate ina219 and save callback
+        self.ina219 = INA219(self, shunt_ohms, max_expected_amps, address)
+        self.ina219.configure(self.ina219.RANGE_16V, self.ina219.GAIN_AUTO)
+        self.ina219_callback = callback
+
+    def ina_read_bus_voltage(self):
+        """
+        This method well execute a read of the bus voltage.
+        If a callback was specified in ina_initialize, then
+        a callback frame is specified as follows:
+
+        [pin_type=0x11, device_i2c_address, read_type=0 (bus voltage), voltage, units='V', timestamp]
+
+        The data is also saved to be retrieved by ina_read_supply_voltage_last()
+
+        :return: callback is called and storage updated with latest value
+        """
+        # noinspection PyProtectedMember
+        self.ina219.voltage()
+
+    def ina_read_bus_voltage_last(self):
+        """
+        Retrieve last bus voltage value read from the ina219.
+
+        :return: list: [pin_type=0x11, device_i2c_address, read_type=0 (bus voltage), units='V', timestamp]
+        """
+        return self.ina_last_value_bus_voltage
+
+    def ina_read_bus_current(self):
+        """
+        This method well execute a read of the bus current.
+        If a callback was specified in ina_initialize, then
+        a callback frame is specified as follows:
+
+        [pin_type=0x11, device_i2c_address, read_type=1 (bus current), current, units='mA', timestamp]
+
+        The data is also saved to be retrieved by ina_read_bus_current_last()
+
+        :return: callback is called and storage updated with latest value
+        """
+        # noinspection PyProtectedMember
+        self.ina219.current()
+
+    def ina_read_bus_current_last(self):
+        """
+        Retrieve last supply voltage value read from the ina219.
+
+
+        :return: list:
+
+        [pin_type=0x11, device_i2c_address, read_type=1 (bus voltage), voltage, units='mA', timestamp]
+        """
+        return self.ina_last_value_bus_current
+
+    def ina_read_supply_voltage(self):
+        """
+        This method well execute a read of the supply voltage.
+        If a callback was specified in ina_initialize, then
+        a callback frame is specified as follows:
+
+        [pin_type=0x11, device_i2c_address, read_type=2 (supply voltage), supply voltage, unit='V',timestamp]
+
+        The data is also saved to be retrieved by ina_read_supply_voltage_last()
+
+        :return: callback is called and storage updated with latest value
+        """
+        # noinspection PyProtectedMember
+        self.ina219.supply_voltage()
+
+    def ina_read_supply_voltage_last(self):
+        """
+        This method retrieves the last supply voltage read.
+
+        :return: list:
+
+        [pin_type=0x11, device_i2c_address, read_type=2 (supply voltage), voltage, units='V', timestamp]
+
+        """
+        return self.ina_last_value_supply_voltage
+
+    def ina_read_shunt_voltage(self):
+        """
+        This method well execute a read of the shunt voltage.
+        If a callback was specified in ina_initialize, then
+        a callback frame is specified as follows:
+
+        [pin_type=0x11, device_i2c_address, read_type=3 (supply voltage), shunt voltage, units='mV', timestamp]
+
+        The data is also saved to be retrieved by ina_read_shunt_voltage_last()
+
+        :return: callback is called and storage updated with latest value
+        """
+        # noinspection PyProtectedMember
+        self.ina219.shunt_voltage()
+
+    def ina_read_shunt_voltage_last(self):
+        """
+        This method well execute a read of the shunt voltage.
+        If a callback was specified in ina_initialize, then
+        a callback frame is specified as follows:
+
+
+        :return: list:
+        [pin_type=0x11, device_i2c_address, read_type=3 (shunt voltage), shunt voltage, units='mV', timestamp]
+        """
+
+        # noinspection PyProtectedMember
+        return self.ina_last_value_shunt_voltage
+
+    def ina_read_power(self):
+        """
+        This method well execute a read of the power.
+        If a callback was specified in ina_initialize, then
+        a callback frame is specified as follows:
+
+        [pin_type=0x11, device_i2c_address, read_type=4 (power), power, units='mW', timestamp]
+
+        The data is also saved to be retrieved by ina_read_power_last()
+
+        :return: callback is called and storage updated with latest value
+        """
+        # noinspection PyProtectedMember
+        self.ina219.power()
+
+    def ina_read_power_last(self):
+        """
+        This method retrieves the last read power value.
+
+        :return: list:
+                [pin_type=0x11, device_i2c_address, read_type=4 (power), power, units='mW', timestamp]
+
+        """
+
+        # noinspection PyProtectedMember
+        return self.ina_last_value_power
+
+    def ina_sleep(self):
+        pass
+
+    def ina_wake(self):
+        pass
+
     def mpu_9250_calibrate(self, log=True):
         """
         This method will calibrate the device. This is a lengthy process
@@ -1062,10 +1235,9 @@ class PymataRh(threading.Thread):
         """
 
         self.mpu_9250_run_event.wait()
-        print(f'running {self._mpu_9250_is_running()} sflag {self.shutdown_flag}')
 
         while True:
-            mpu_data=[PrivateConstants.MPU9250, self.mpu_9250_device.address_mpu]
+            mpu_data = [PrivateConstants.MPU9250, self.mpu_9250_device.address_mpu]
             if self._mpu_9250_is_running() and not self.shutdown_flag:
                 mpu_data = mpu_data + self.mpu_9250_device.get_all_data()
                 mpu_data.append(time.time())
@@ -1413,6 +1585,7 @@ class PymataRh(threading.Thread):
 
         self.pwm_write(pin, position)
 
+    # noinspection PyBroadException
     def shutdown(self):
         """
         This method attempts an orderly shutdown
@@ -1663,7 +1836,6 @@ class PymataRh(threading.Thread):
         reply_data = [PrivateConstants.I2C]
         # reassemble the data from the firmata 2 byte format
         address = (data[0] & 0x7f) + (data[1] << 7)
-
 
         # if we have an entry in the i2c_map, proceed
         if address in self.i2c_map:
@@ -1991,6 +2163,7 @@ class PymataRh(threading.Thread):
             except OSError:
                 pass
 
+    # noinspection PyBroadException
     def _tcp_receiver(self):
         """
         Thread to continuously check for incoming data.
