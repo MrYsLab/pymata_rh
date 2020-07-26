@@ -1204,6 +1204,7 @@ class PymataRh(threading.Thread):
                                        g_fs, a_fs, m_fs, mode,
                                        mag_scale=mag_scale, g_bias=g_bias,
                                        a_bias=a_bias, m_bias=m_bias)
+        self.mpu_constants = mpu_constants
         self.mpu_callback = callback
 
     def mpu_9250_read_data(self, mode=mpu_constants.MPU9250_READ_CONTINUOUS_ON,
