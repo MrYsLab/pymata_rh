@@ -1218,8 +1218,8 @@ class PymataRh(threading.Thread):
         :param continuous_delay: Delay between reads
 
         :return: For MPU9250_READ_CONTINUOUS_ON, if a callback was specified in
-        mpu_9250_initialize(), then
-                 data returned is returned via callback.
+        mpu_9250_initialize(), then data returned is returned via callback.
+
                  Callback data is a list with format:
                  index[0] = pin type - for mpu9250 the value is 16
                  index[1] = mpu address
@@ -1237,22 +1237,6 @@ class PymataRh(threading.Thread):
 
                  If no callback was specified, then data is stored and can be
                  retrieved using mpu_9250_read_saved_data().
-
-                 Callback data is a list with format:
-                 index[0] = pin type - for mpu9250 the value is 16
-                 index[1] = mpu address
-                 index[2] = accelerometer x axis
-                 index[3] = accelerometer y axis
-                 index[4] = accelerometer z axis
-                 index[5] = gyroscope x axis
-                 index[6] = gyroscope y axis
-                 index[7] = gyroscope z axis
-                 index[8] = magnetometer x axis
-                 index[9] = magnetometer y axis
-                 index[10] = magnetometer z axis
-                 index[11] = temperature
-                 index[12] = timestamp
-
         """
         self.mpu_read_delay = continuous_delay
         if mode == mpu_constants.MPU9250_READ_CONTINUOUS_ON:
@@ -1287,7 +1271,7 @@ class PymataRh(threading.Thread):
         """
         Retrieve and return the last data set read from the mpu_9250
 
-        :return: last read data in list form or []] if no data is available.
+        :return: last read data in list form or [] if no data is available.
         """
         if self.mpu_9250_device.address_mpu:
             return self.mpu_last_value
