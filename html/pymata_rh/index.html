@@ -1,5 +1,4 @@
 <!doctype html>
-<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -226,9 +225,9 @@ import time
 
 from pymata_rh.pin_data import PinData
 from pymata_rh.private_constants import PrivateConstants
-from mpu_9250.mpu_9250 import MPU9250
-import mpu_9250.mpu_9250_constants as mpu_constants
-from ina_219.ina_219 import INA219
+from pymata_rh.mpu_9250.mpu_9250 import MPU9250
+import pymata_rh.mpu_9250.mpu_9250_constants as mpu_constants
+from pymata_rh.ina_219.ina_219 import INA219
 
 
 # noinspection PyPep8
@@ -1292,17 +1291,28 @@ class PymataRh(threading.Thread):
         :return: Settings are printed to console
         &#34;&#34;&#34;
         settings = self.mpu_9250_device.get_all_settings()
-        print(f&#39;MPU Address: {settings[0]}  AK Address: {settings[1]}  &#39;
-              f&#39;Gyro Resolution: {settings[2]}  Accel Resolution: {settings[3]}  &#39;
-              f&#39;Mag Resolution: {settings[4]}&#39;)
-        print(f&#39;Gyro Bias: {settings[5]}  Accel Bias: {settings[6]}&#39;)
-        print(f&#39;Mag Calibration: {settings[7]}  Mag Scale: {settings[8]}  Mag Bias: {settings[9]}&#39;)
+        print(f&#39;MPU Address: {settings[0]}&#39;)
+        print(f&#39;AK Address: {settings[1]}&#39;)
+        print(f&#39;Accel Resolution: {settings[3]}&#39;)
+        print(f&#39;Gyro Resolution: {settings[2]}&#39;)
+        print(f&#39;Mag Resolution: {settings[4]}&#39;)
+        print(f&#39;Accel Bias: {list(settings[8:11])}&#39;)
+        print(f&#39;Gyro Bias: {list(settings[5:8])}&#39;)
+        print(f&#39;Mag Bias: {list(settings[17:20])}&#39;)
+        print(f&#39;Mag Calibration: {list(settings[11:14])}&#39;)
+        print(f&#39;Mag Scale: {list(settings[14:17])}&#39;)
+
         if log:
-            logging.info(f&#39;MPU Address: {settings[0]}  AK Address: {settings[1]}  &#39;
-                         f&#39;Gyro Resolution: {settings[2]}  Accel Resolution: {settings[3]}  &#39;
-                         f&#39;Mag Resolution: {settings[4]}&#39;)
-            logging.info(f&#39;Gyro Bias: {settings[5]}  Accel Bias: {settings[6]}&#39;)
-            logging.info(f&#39;Mag Calibration: {settings[7]}  Mag Scale: {settings[8]}  Mag Bias: {settings[9]}&#39;)
+            logging.info(f&#39;MPU Address: {settings[0]}&#39;)
+            logging.info(f&#39;AK Address: {settings[1]}&#39;)
+            logging.info(f&#39;Accel Resolution: {settings[3]}&#39;)
+            logging.info(f&#39;Gyro Resolution: {settings[2]}&#39;)
+            logging.info(f&#39;Mag Resolution: {settings[4]}&#39;)
+            logging.info(f&#39;Accel Bias: {list(settings[8:11])}&#39;)
+            logging.info(f&#39;Gyro Bias: {list(settings[5:8])}&#39;)
+            logging.info(f&#39;Mag Bias: {list(settings[17:20])}&#39;)
+            logging.info(f&#39;Mag Calibration: {list(settings[11:14])}&#39;)
+            logging.info(f&#39;Mag Scale: {list(settings[14:17])}&#39;)
 
     def mpu_9250_initialize(self, address_ak=mpu_constants.AK8963_ADDRESS,
                             address_mpu=mpu_constants.MPU9250_ADDRESS_68,
@@ -1310,6 +1320,9 @@ class PymataRh(threading.Thread):
                             a_fs=mpu_constants.AFS_2G,
                             m_fs=mpu_constants.AK8963_BIT_16,
                             mode=mpu_constants.AK8963_MODE_C8HZ,
+                            a_bias=(0, 0, 0), g_bias=(0, 0, 0),
+                            m_bias=(0, 0, 0),
+                            mag_scale=(1, 1, 1),
                             callback=None
                             ):
         &#34;&#34;&#34;
@@ -1328,6 +1341,14 @@ class PymataRh(threading.Thread):
 
         :param mode: Magnetometer mode select (default:AK8963_MODE_C8HZ)
 
+        :param a_bias: Accelerometer Bias
+
+        :param g_bias: Gyroscope Bias
+
+        :param m_bias: Magnetometer Hard Iron Distortion
+
+        :param mag_scale: Magnetometer Soft Iron Distortion
+
         :param callback: Callback method that will receive mpu data frames
 
         &#34;&#34;&#34;
@@ -1338,8 +1359,8 @@ class PymataRh(threading.Thread):
 
         self.mpu_9250_device = MPU9250(self, address_ak, address_mpu,
                                        g_fs, a_fs, m_fs, mode,
-                                       mag_scale=(1, 1, 1), g_bias=(0, 0, 0),
-                                       a_bias=(0, 0, 0), m_bias=(0, 0, 0))
+                                       mag_scale=mag_scale, g_bias=g_bias,
+                                       a_bias=a_bias, m_bias=m_bias)
         self.mpu_callback = callback
 
     def mpu_9250_read_data(self, mode=mpu_constants.MPU9250_READ_CONTINUOUS_ON,
@@ -1348,15 +1369,28 @@ class PymataRh(threading.Thread):
         Read and report mpu_9250 data for accelerometer, gyroscope,
         magnetometer, and device temperature.
 
-        :param mode: MPU9250_READ_CONTINUOUS_ON - data is read continuously.
-
-                     MPU9250_READ_CONTINUOUS_OFF - turn off continuous reads
+        :param mode: MPU9250_READ_CONTINUOUS_ON(0) - data is read continuously, or
+                     MPU9250_READ_CONTINUOUS_OFF - turn off continuous reads.
 
         :param continuous_delay: Delay between reads
 
-        :return: For MPU9250_READ_CONTINUOUS_ON,
-                 if a callback was specified in mpu_9250_initialize(), then
+        :return: For MPU9250_READ_CONTINUOUS_ON, if a callback was specified in
+        mpu_9250_initialize(), then
                  data returned is returned via callback.
+                 Callback data is a list with format:
+                 index[0] = pin type - for mpu9250 the value is 16
+                 index[1] = mpu address
+                 index[2] = accelerometer x axis
+                 index[3] = accelerometer y axis
+                 index[4] = accelerometer z axis
+                 index[5] = gyroscope x axis
+                 index[6] = gyroscope y axis
+                 index[7] = gyroscope z axis
+                 index[8] = magnetometer x axis
+                 index[9] = magnetometer y axis
+                 index[10] = magnetometer z axis
+                 index[11] = temperature
+                 index[12] = timestamp
 
                  If no callback was specified, then data is stored and can be
                  retrieved using mpu_9250_read_saved_data().
@@ -1380,7 +1414,6 @@ class PymataRh(threading.Thread):
         self.mpu_read_delay = continuous_delay
         if mode == mpu_constants.MPU9250_READ_CONTINUOUS_ON:
             self._mpu9250_thread_run()
-
         elif mode == mpu_constants.MPU9250_READ_CONTINUOUS_OFF:
             self._mpu9250_thread_stop()
         else:
@@ -1411,9 +1444,7 @@ class PymataRh(threading.Thread):
         &#34;&#34;&#34;
         Retrieve and return the last data set read from the mpu_9250
 
-        :return: last read data in list form:
-
-                 or None if no data is available.
+        :return: last read data in list form or []] if no data is available.
         &#34;&#34;&#34;
         if self.mpu_9250_device.address_mpu:
             return self.mpu_last_value
@@ -3440,17 +3471,28 @@ the WiFi device. Typically this is 3030</p></div>
         :return: Settings are printed to console
         &#34;&#34;&#34;
         settings = self.mpu_9250_device.get_all_settings()
-        print(f&#39;MPU Address: {settings[0]}  AK Address: {settings[1]}  &#39;
-              f&#39;Gyro Resolution: {settings[2]}  Accel Resolution: {settings[3]}  &#39;
-              f&#39;Mag Resolution: {settings[4]}&#39;)
-        print(f&#39;Gyro Bias: {settings[5]}  Accel Bias: {settings[6]}&#39;)
-        print(f&#39;Mag Calibration: {settings[7]}  Mag Scale: {settings[8]}  Mag Bias: {settings[9]}&#39;)
+        print(f&#39;MPU Address: {settings[0]}&#39;)
+        print(f&#39;AK Address: {settings[1]}&#39;)
+        print(f&#39;Accel Resolution: {settings[3]}&#39;)
+        print(f&#39;Gyro Resolution: {settings[2]}&#39;)
+        print(f&#39;Mag Resolution: {settings[4]}&#39;)
+        print(f&#39;Accel Bias: {list(settings[8:11])}&#39;)
+        print(f&#39;Gyro Bias: {list(settings[5:8])}&#39;)
+        print(f&#39;Mag Bias: {list(settings[17:20])}&#39;)
+        print(f&#39;Mag Calibration: {list(settings[11:14])}&#39;)
+        print(f&#39;Mag Scale: {list(settings[14:17])}&#39;)
+
         if log:
-            logging.info(f&#39;MPU Address: {settings[0]}  AK Address: {settings[1]}  &#39;
-                         f&#39;Gyro Resolution: {settings[2]}  Accel Resolution: {settings[3]}  &#39;
-                         f&#39;Mag Resolution: {settings[4]}&#39;)
-            logging.info(f&#39;Gyro Bias: {settings[5]}  Accel Bias: {settings[6]}&#39;)
-            logging.info(f&#39;Mag Calibration: {settings[7]}  Mag Scale: {settings[8]}  Mag Bias: {settings[9]}&#39;)
+            logging.info(f&#39;MPU Address: {settings[0]}&#39;)
+            logging.info(f&#39;AK Address: {settings[1]}&#39;)
+            logging.info(f&#39;Accel Resolution: {settings[3]}&#39;)
+            logging.info(f&#39;Gyro Resolution: {settings[2]}&#39;)
+            logging.info(f&#39;Mag Resolution: {settings[4]}&#39;)
+            logging.info(f&#39;Accel Bias: {list(settings[8:11])}&#39;)
+            logging.info(f&#39;Gyro Bias: {list(settings[5:8])}&#39;)
+            logging.info(f&#39;Mag Bias: {list(settings[17:20])}&#39;)
+            logging.info(f&#39;Mag Calibration: {list(settings[11:14])}&#39;)
+            logging.info(f&#39;Mag Scale: {list(settings[14:17])}&#39;)
 
     def mpu_9250_initialize(self, address_ak=mpu_constants.AK8963_ADDRESS,
                             address_mpu=mpu_constants.MPU9250_ADDRESS_68,
@@ -3458,6 +3500,9 @@ the WiFi device. Typically this is 3030</p></div>
                             a_fs=mpu_constants.AFS_2G,
                             m_fs=mpu_constants.AK8963_BIT_16,
                             mode=mpu_constants.AK8963_MODE_C8HZ,
+                            a_bias=(0, 0, 0), g_bias=(0, 0, 0),
+                            m_bias=(0, 0, 0),
+                            mag_scale=(1, 1, 1),
                             callback=None
                             ):
         &#34;&#34;&#34;
@@ -3476,6 +3521,14 @@ the WiFi device. Typically this is 3030</p></div>
 
         :param mode: Magnetometer mode select (default:AK8963_MODE_C8HZ)
 
+        :param a_bias: Accelerometer Bias
+
+        :param g_bias: Gyroscope Bias
+
+        :param m_bias: Magnetometer Hard Iron Distortion
+
+        :param mag_scale: Magnetometer Soft Iron Distortion
+
         :param callback: Callback method that will receive mpu data frames
 
         &#34;&#34;&#34;
@@ -3486,8 +3539,8 @@ the WiFi device. Typically this is 3030</p></div>
 
         self.mpu_9250_device = MPU9250(self, address_ak, address_mpu,
                                        g_fs, a_fs, m_fs, mode,
-                                       mag_scale=(1, 1, 1), g_bias=(0, 0, 0),
-                                       a_bias=(0, 0, 0), m_bias=(0, 0, 0))
+                                       mag_scale=mag_scale, g_bias=g_bias,
+                                       a_bias=a_bias, m_bias=m_bias)
         self.mpu_callback = callback
 
     def mpu_9250_read_data(self, mode=mpu_constants.MPU9250_READ_CONTINUOUS_ON,
@@ -3496,15 +3549,28 @@ the WiFi device. Typically this is 3030</p></div>
         Read and report mpu_9250 data for accelerometer, gyroscope,
         magnetometer, and device temperature.
 
-        :param mode: MPU9250_READ_CONTINUOUS_ON - data is read continuously.
-
-                     MPU9250_READ_CONTINUOUS_OFF - turn off continuous reads
+        :param mode: MPU9250_READ_CONTINUOUS_ON(0) - data is read continuously, or
+                     MPU9250_READ_CONTINUOUS_OFF - turn off continuous reads.
 
         :param continuous_delay: Delay between reads
 
-        :return: For MPU9250_READ_CONTINUOUS_ON,
-                 if a callback was specified in mpu_9250_initialize(), then
+        :return: For MPU9250_READ_CONTINUOUS_ON, if a callback was specified in
+        mpu_9250_initialize(), then
                  data returned is returned via callback.
+                 Callback data is a list with format:
+                 index[0] = pin type - for mpu9250 the value is 16
+                 index[1] = mpu address
+                 index[2] = accelerometer x axis
+                 index[3] = accelerometer y axis
+                 index[4] = accelerometer z axis
+                 index[5] = gyroscope x axis
+                 index[6] = gyroscope y axis
+                 index[7] = gyroscope z axis
+                 index[8] = magnetometer x axis
+                 index[9] = magnetometer y axis
+                 index[10] = magnetometer z axis
+                 index[11] = temperature
+                 index[12] = timestamp
 
                  If no callback was specified, then data is stored and can be
                  retrieved using mpu_9250_read_saved_data().
@@ -3528,7 +3594,6 @@ the WiFi device. Typically this is 3030</p></div>
         self.mpu_read_delay = continuous_delay
         if mode == mpu_constants.MPU9250_READ_CONTINUOUS_ON:
             self._mpu9250_thread_run()
-
         elif mode == mpu_constants.MPU9250_READ_CONTINUOUS_OFF:
             self._mpu9250_thread_stop()
         else:
@@ -3559,9 +3624,7 @@ the WiFi device. Typically this is 3030</p></div>
         &#34;&#34;&#34;
         Retrieve and return the last data set read from the mpu_9250
 
-        :return: last read data in list form:
-
-                 or None if no data is available.
+        :return: last read data in list form or []] if no data is available.
         &#34;&#34;&#34;
         if self.mpu_9250_device.address_mpu:
             return self.mpu_last_value
@@ -5553,7 +5616,7 @@ named mpu_calibration.log</p>
 </details>
 </dd>
 <dt id="pymata_rh.pymata_rh.PymataRh.mpu_9250_initialize"><code class="name flex">
-<span>def <span class="ident">mpu_9250_initialize</span></span>(<span>self, address_ak=12, address_mpu=104, g_fs=1, a_fs=0, m_fs=1, mode=2, callback=None)</span>
+<span>def <span class="ident">mpu_9250_initialize</span></span>(<span>self, address_ak=12, address_mpu=104, g_fs=1, a_fs=0, m_fs=1, mode=2, a_bias=(0, 0, 0), g_bias=(0, 0, 0), m_bias=(0, 0, 0), mag_scale=(1, 1, 1), callback=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This method instantiates an mpu_9250 object.
@@ -5565,6 +5628,10 @@ MPU-9250 I2C address (default:MPU9050_ADDRESS_68[0x68]).</p>
 <p>:param a_fs: Accelerometer full scale select (default:AFS_16G[16g]).</p>
 <p>:param m_fs: Magnetometer scale select (default:AK8963_BIT_16[16bit])</p>
 <p>:param mode: Magnetometer mode select (default:AK8963_MODE_C8HZ)</p>
+<p>:param a_bias: Accelerometer Bias</p>
+<p>:param g_bias: Gyroscope Bias</p>
+<p>:param m_bias: Magnetometer Hard Iron Distortion</p>
+<p>:param mag_scale: Magnetometer Soft Iron Distortion</p>
 <p>:param callback: Callback method that will receive mpu data frames</p></div>
 <details class="source">
 <summary>
@@ -5576,6 +5643,9 @@ MPU-9250 I2C address (default:MPU9050_ADDRESS_68[0x68]).</p>
                         a_fs=mpu_constants.AFS_2G,
                         m_fs=mpu_constants.AK8963_BIT_16,
                         mode=mpu_constants.AK8963_MODE_C8HZ,
+                        a_bias=(0, 0, 0), g_bias=(0, 0, 0),
+                        m_bias=(0, 0, 0),
+                        mag_scale=(1, 1, 1),
                         callback=None
                         ):
     &#34;&#34;&#34;
@@ -5594,6 +5664,14 @@ MPU-9250 I2C address (default:MPU9050_ADDRESS_68[0x68]).</p>
 
     :param mode: Magnetometer mode select (default:AK8963_MODE_C8HZ)
 
+    :param a_bias: Accelerometer Bias
+
+    :param g_bias: Gyroscope Bias
+
+    :param m_bias: Magnetometer Hard Iron Distortion
+
+    :param mag_scale: Magnetometer Soft Iron Distortion
+
     :param callback: Callback method that will receive mpu data frames
 
     &#34;&#34;&#34;
@@ -5604,24 +5682,37 @@ MPU-9250 I2C address (default:MPU9050_ADDRESS_68[0x68]).</p>
 
     self.mpu_9250_device = MPU9250(self, address_ak, address_mpu,
                                    g_fs, a_fs, m_fs, mode,
-                                   mag_scale=(1, 1, 1), g_bias=(0, 0, 0),
-                                   a_bias=(0, 0, 0), m_bias=(0, 0, 0))
+                                   mag_scale=mag_scale, g_bias=g_bias,
+                                   a_bias=a_bias, m_bias=m_bias)
     self.mpu_callback = callback</code></pre>
 </details>
 </dd>
 <dt id="pymata_rh.pymata_rh.PymataRh.mpu_9250_read_data"><code class="name flex">
-<span>def <span class="ident">mpu_9250_read_data</span></span>(<span>self, mode=0, continuous_delay=0.3)</span>
+<span>def <span class="ident">mpu_9250_read_data</span></span>(<span>self, mode=1, continuous_delay=0.3)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Read and report mpu_9250 data for accelerometer, gyroscope,
 magnetometer, and device temperature.</p>
-<p>:param mode: MPU9250_READ_CONTINUOUS_ON - data is read continuously.</p>
-<pre><code>         MPU9250_READ_CONTINUOUS_OFF - turn off continuous reads
-</code></pre>
+<p>:param mode: MPU9250_READ_CONTINUOUS_ON(0) - data is read continuously, or
+MPU9250_READ_CONTINUOUS_OFF - turn off continuous reads.</p>
 <p>:param continuous_delay: Delay between reads</p>
-<p>:return: For MPU9250_READ_CONTINUOUS_ON,
-if a callback was specified in mpu_9250_initialize(), then
-data returned is returned via callback.</p>
+<p>:return: For MPU9250_READ_CONTINUOUS_ON, if a callback was specified in
+mpu_9250_initialize(), then
+data returned is returned via callback.
+Callback data is a list with format:
+index[0] = pin type - for mpu9250 the value is 16
+index[1] = mpu address
+index[2] = accelerometer x axis
+index[3] = accelerometer y axis
+index[4] = accelerometer z axis
+index[5] = gyroscope x axis
+index[6] = gyroscope y axis
+index[7] = gyroscope z axis
+index[8] = magnetometer x axis
+index[9] = magnetometer y axis
+index[10] = magnetometer z axis
+index[11] = temperature
+index[12] = timestamp</p>
 <pre><code>     If no callback was specified, then data is stored and can be
      retrieved using mpu_9250_read_saved_data().
 
@@ -5650,15 +5741,28 @@ data returned is returned via callback.</p>
     Read and report mpu_9250 data for accelerometer, gyroscope,
     magnetometer, and device temperature.
 
-    :param mode: MPU9250_READ_CONTINUOUS_ON - data is read continuously.
-
-                 MPU9250_READ_CONTINUOUS_OFF - turn off continuous reads
+    :param mode: MPU9250_READ_CONTINUOUS_ON(0) - data is read continuously, or
+                 MPU9250_READ_CONTINUOUS_OFF - turn off continuous reads.
 
     :param continuous_delay: Delay between reads
 
-    :return: For MPU9250_READ_CONTINUOUS_ON,
-             if a callback was specified in mpu_9250_initialize(), then
+    :return: For MPU9250_READ_CONTINUOUS_ON, if a callback was specified in
+    mpu_9250_initialize(), then
              data returned is returned via callback.
+             Callback data is a list with format:
+             index[0] = pin type - for mpu9250 the value is 16
+             index[1] = mpu address
+             index[2] = accelerometer x axis
+             index[3] = accelerometer y axis
+             index[4] = accelerometer z axis
+             index[5] = gyroscope x axis
+             index[6] = gyroscope y axis
+             index[7] = gyroscope z axis
+             index[8] = magnetometer x axis
+             index[9] = magnetometer y axis
+             index[10] = magnetometer z axis
+             index[11] = temperature
+             index[12] = timestamp
 
              If no callback was specified, then data is stored and can be
              retrieved using mpu_9250_read_saved_data().
@@ -5682,7 +5786,6 @@ data returned is returned via callback.</p>
     self.mpu_read_delay = continuous_delay
     if mode == mpu_constants.MPU9250_READ_CONTINUOUS_ON:
         self._mpu9250_thread_run()
-
     elif mode == mpu_constants.MPU9250_READ_CONTINUOUS_OFF:
         self._mpu9250_thread_stop()
     else:
@@ -5694,9 +5797,7 @@ data returned is returned via callback.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Retrieve and return the last data set read from the mpu_9250</p>
-<p>:return: last read data in list form:</p>
-<pre><code>     or None if no data is available.
-</code></pre></div>
+<p>:return: last read data in list form or []] if no data is available.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -5705,9 +5806,7 @@ data returned is returned via callback.</p>
     &#34;&#34;&#34;
     Retrieve and return the last data set read from the mpu_9250
 
-    :return: last read data in list form:
-
-             or None if no data is available.
+    :return: last read data in list form or []] if no data is available.
     &#34;&#34;&#34;
     if self.mpu_9250_device.address_mpu:
         return self.mpu_last_value</code></pre>
