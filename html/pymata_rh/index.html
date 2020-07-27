@@ -213,10 +213,11 @@ All other digital pins may be configured as input, output or PWM</p>
 from collections import deque
 import datetime
 import logging
+# noinspection PyPackageRequirements
 import serial
 # noinspection PyPackageRequirements
 from serial.tools import list_ports
-# noinspection PyPackageRequirementscd
+# noinspection PyPackageRequirementscd,PyPackageRequirements
 from serial.serialutil import SerialException
 import socket
 import sys
@@ -328,6 +329,7 @@ class PymataRh(threading.Thread):
         self.mpu_9250_device = None
         self.mpu_callback = None
         self.mpu_last_value = []
+        self.mpu_constants = mpu_constants
 
         self.mpu_read_delay = 0.3  # delay between reads
 
@@ -1067,21 +1069,22 @@ class PymataRh(threading.Thread):
                 data.append(item_msb)
             self._send_sysex(PrivateConstants.I2C_REQUEST, data)
 
-    # def ina_initialize(self, shunt_ohms=0.2, max_expected_amps=5.0,
-    def ina_initialize(self, shunt_ohms=0.1, max_expected_amps=0.2,
-                       address=0x40, callback=None):
-        # address=0x40, callback=None):
+    def ina_initialize(self, address=0x40, shunt_ohms=0.2,
+                       max_expected_amps=0.2, callback=None):
         &#34;&#34;&#34;
-        :param shunt_ohms:
+        This method instantiates an INA219 object.
 
-        :param max_expected_amps:
+        :param address: The i2c address of the device
 
-        :param address:
+        :param shunt_ohms: The shunt resistance in ohms
 
-        :param callback:
+        :param max_expected_amps: The maximum expected current in amps
+
+        :param callback: Callback method that will INA219 callbacks
+
+        Note: There is a single callback shared by all INA methods.
 
         &#34;&#34;&#34;
-
         # make sure that we initialize i2c mode
         self.set_pin_mode_i2c()
 
@@ -1222,10 +1225,10 @@ class PymataRh(threading.Thread):
         return self.ina_last_value_power
 
     def ina_sleep(self):
-        pass
+        self.ina219.ina_sleep()
 
     def ina_wake(self):
-        pass
+        self.ina219.ina_wake()
 
     def mpu_9250_calibrate(self, log=True):
         &#34;&#34;&#34;
@@ -1315,7 +1318,7 @@ class PymataRh(threading.Thread):
             logging.info(f&#39;Mag Scale: {tuple(settings[14:17])}&#39;)
 
     def mpu_9250_initialize(self, address_ak=mpu_constants.AK8963_ADDRESS,
-                            address_mpu=mpu_constants.MPU9250_ADDRESS_68,
+                            address_mpu=mpu_constants.MPU9250_ADDRESS_69,
                             g_fs=mpu_constants.GFS_500,
                             a_fs=mpu_constants.AFS_2G,
                             m_fs=mpu_constants.AK8963_BIT_16,
@@ -2492,6 +2495,7 @@ the WiFi device. Typically this is 3030</p></div>
         self.mpu_9250_device = None
         self.mpu_callback = None
         self.mpu_last_value = []
+        self.mpu_constants = mpu_constants
 
         self.mpu_read_delay = 0.3  # delay between reads
 
@@ -3231,21 +3235,22 @@ the WiFi device. Typically this is 3030</p></div>
                 data.append(item_msb)
             self._send_sysex(PrivateConstants.I2C_REQUEST, data)
 
-    # def ina_initialize(self, shunt_ohms=0.2, max_expected_amps=5.0,
-    def ina_initialize(self, shunt_ohms=0.1, max_expected_amps=0.2,
-                       address=0x40, callback=None):
-        # address=0x40, callback=None):
+    def ina_initialize(self, address=0x40, shunt_ohms=0.2,
+                       max_expected_amps=0.2, callback=None):
         &#34;&#34;&#34;
-        :param shunt_ohms:
+        This method instantiates an INA219 object.
 
-        :param max_expected_amps:
+        :param address: The i2c address of the device
 
-        :param address:
+        :param shunt_ohms: The shunt resistance in ohms
 
-        :param callback:
+        :param max_expected_amps: The maximum expected current in amps
+
+        :param callback: Callback method that will INA219 callbacks
+
+        Note: There is a single callback shared by all INA methods.
 
         &#34;&#34;&#34;
-
         # make sure that we initialize i2c mode
         self.set_pin_mode_i2c()
 
@@ -3386,10 +3391,10 @@ the WiFi device. Typically this is 3030</p></div>
         return self.ina_last_value_power
 
     def ina_sleep(self):
-        pass
+        self.ina219.ina_sleep()
 
     def ina_wake(self):
-        pass
+        self.ina219.ina_wake()
 
     def mpu_9250_calibrate(self, log=True):
         &#34;&#34;&#34;
@@ -3479,7 +3484,7 @@ the WiFi device. Typically this is 3030</p></div>
             logging.info(f&#39;Mag Scale: {tuple(settings[14:17])}&#39;)
 
     def mpu_9250_initialize(self, address_ak=mpu_constants.AK8963_ADDRESS,
-                            address_mpu=mpu_constants.MPU9250_ADDRESS_68,
+                            address_mpu=mpu_constants.MPU9250_ADDRESS_69,
                             g_fs=mpu_constants.GFS_500,
                             a_fs=mpu_constants.AFS_2G,
                             m_fs=mpu_constants.AK8963_BIT_16,
@@ -5178,31 +5183,35 @@ passed in as a list</p></div>
 </details>
 </dd>
 <dt id="pymata_rh.pymata_rh.PymataRh.ina_initialize"><code class="name flex">
-<span>def <span class="ident">ina_initialize</span></span>(<span>self, shunt_ohms=0.1, max_expected_amps=0.2, address=64, callback=None)</span>
+<span>def <span class="ident">ina_initialize</span></span>(<span>self, address=64, shunt_ohms=0.2, max_expected_amps=0.2, callback=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>:param shunt_ohms:</p>
-<p>:param max_expected_amps:</p>
-<p>:param address:</p>
-<p>:param callback:</p></div>
+<div class="desc"><p>This method instantiates an INA219 object.</p>
+<p>:param address: The i2c address of the device</p>
+<p>:param shunt_ohms: The shunt resistance in ohms</p>
+<p>:param max_expected_amps: The maximum expected current in amps</p>
+<p>:param callback: Callback method that will INA219 callbacks</p>
+<p>Note: There is a single callback shared by all INA methods.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def ina_initialize(self, shunt_ohms=0.1, max_expected_amps=0.2,
-                   address=0x40, callback=None):
-    # address=0x40, callback=None):
+<pre><code class="python">def ina_initialize(self, address=0x40, shunt_ohms=0.2,
+                   max_expected_amps=0.2, callback=None):
     &#34;&#34;&#34;
-    :param shunt_ohms:
+    This method instantiates an INA219 object.
 
-    :param max_expected_amps:
+    :param address: The i2c address of the device
 
-    :param address:
+    :param shunt_ohms: The shunt resistance in ohms
 
-    :param callback:
+    :param max_expected_amps: The maximum expected current in amps
+
+    :param callback: Callback method that will INA219 callbacks
+
+    Note: There is a single callback shared by all INA methods.
 
     &#34;&#34;&#34;
-
     # make sure that we initialize i2c mode
     self.set_pin_mode_i2c()
 
@@ -5489,7 +5498,7 @@ a callback frame is specified as follows:</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def ina_sleep(self):
-    pass</code></pre>
+    self.ina219.ina_sleep()</code></pre>
 </details>
 </dd>
 <dt id="pymata_rh.pymata_rh.PymataRh.ina_wake"><code class="name flex">
@@ -5502,7 +5511,7 @@ a callback frame is specified as follows:</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def ina_wake(self):
-    pass</code></pre>
+    self.ina219.ina_wake()</code></pre>
 </details>
 </dd>
 <dt id="pymata_rh.pymata_rh.PymataRh.mpu_9250_calibrate"><code class="name flex">
@@ -5584,7 +5593,7 @@ named mpu_calibration.log</p>
 </details>
 </dd>
 <dt id="pymata_rh.pymata_rh.PymataRh.mpu_9250_initialize"><code class="name flex">
-<span>def <span class="ident">mpu_9250_initialize</span></span>(<span>self, address_ak=12, address_mpu=104, g_fs=1, a_fs=0, m_fs=1, mode=2, a_bias=(0, 0, 0), g_bias=(0, 0, 0), m_bias=(0, 0, 0), mag_scale=(1, 1, 1), callback=None)</span>
+<span>def <span class="ident">mpu_9250_initialize</span></span>(<span>self, address_ak=12, address_mpu=105, g_fs=1, a_fs=0, m_fs=1, mode=2, a_bias=(0, 0, 0), g_bias=(0, 0, 0), m_bias=(0, 0, 0), mag_scale=(1, 1, 1), callback=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This method instantiates an mpu_9250 object.
@@ -5606,7 +5615,7 @@ MPU-9250 I2C address (default:MPU9050_ADDRESS_68[0x68]).</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def mpu_9250_initialize(self, address_ak=mpu_constants.AK8963_ADDRESS,
-                        address_mpu=mpu_constants.MPU9250_ADDRESS_68,
+                        address_mpu=mpu_constants.MPU9250_ADDRESS_69,
                         g_fs=mpu_constants.GFS_500,
                         a_fs=mpu_constants.AFS_2G,
                         m_fs=mpu_constants.AK8963_BIT_16,
