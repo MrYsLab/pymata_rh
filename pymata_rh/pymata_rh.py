@@ -69,9 +69,9 @@ import time
 
 from pymata_rh.pin_data import PinData
 from pymata_rh.private_constants import PrivateConstants
-from pymata_rh.mpu_9250.mpu_9250 import MPU9250
-import pymata_rh.mpu_9250.mpu_9250_constants as mpu_constants
-from pymata_rh.ina_219.ina_219 import INA219
+from pymata_rh.mpu_9250 import MPU9250
+import pymata_rh.mpu_9250_constants as mpu_constants
+from pymata_rh.ina_219 import INA219
 
 
 # noinspection PyPep8

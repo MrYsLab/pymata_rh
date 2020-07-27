@@ -21,32 +21,25 @@ from pymata_rh import pymata_rh
 
 
 """
-ina_219
+Run a calibration cycle of the mpu9250
 """
 
 def mycb(data):
     print(f'mycb: {data}')
 
 board = pymata_rh.PymataRh()
-board.ina_initialize(callback=mycb)
+# board.mpu_9250_calibrate()
+# sys.exit(0)
+board.mpu_9250_initialize(callback=mycb)
+# board.mpu_9250_initialize()
 
-board.ina_read_bus_voltage()
-board.ina_read_bus_current()
-board.ina_read_supply_voltage()
-board.ina_read_shunt_voltage()
-board.ina_read_power()
+board.mpu_9250_read_data()
 
 while True:
-    # poll the previous values
-    print(board.ina_read_bus_voltage_last())
-    print(board.ina_read_bus_current_last())
-    print(board.ina_read_supply_voltage_last())
-    print(board.ina_read_shunt_voltage_last())
-    print(board.ina_read_power_last())
-    print('sleep')
-    board.ina_sleep()
-    time.sleep(1)
-    board.ina_wake()
-    print('awake')
-    board.ina_read_bus_current()
+    # print(board.mpu_9250_read_saved_data())
 
+    # print(board.mpu_9250_read_data(mode=board.mpu_constants.MPU9250_READ_CONTINUOUS_OFF))
+    time.sleep(3)
+    # print(board.mpu_9250_read_data())
+
+    # time.sleep(1)
