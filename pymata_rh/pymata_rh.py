@@ -912,7 +912,7 @@ class PymataRh(threading.Thread):
                 data.append(item_msb)
             self._send_sysex(PrivateConstants.I2C_REQUEST, data)
 
-    def ina_initialize(self, address=0x40, shunt_ohms=0.2,
+    def ina_initialize(self, address=0x41, shunt_ohms=0.2,
                        max_expected_amps=0.2, callback=None):
         """
         This method instantiates an INA219 object.
