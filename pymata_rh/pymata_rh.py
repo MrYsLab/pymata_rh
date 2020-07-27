@@ -56,10 +56,11 @@
 from collections import deque
 import datetime
 import logging
+# noinspection PyPackageRequirements
 import serial
 # noinspection PyPackageRequirements
 from serial.tools import list_ports
-# noinspection PyPackageRequirementscd
+# noinspection PyPackageRequirementscd,PyPackageRequirements
 from serial.serialutil import SerialException
 import socket
 import sys
@@ -171,6 +172,7 @@ class PymataRh(threading.Thread):
         self.mpu_9250_device = None
         self.mpu_callback = None
         self.mpu_last_value = []
+        self.mpu_constants = mpu_constants
 
         self.mpu_read_delay = 0.3  # delay between reads
 
@@ -911,20 +913,22 @@ class PymataRh(threading.Thread):
             self._send_sysex(PrivateConstants.I2C_REQUEST, data)
 
     # def ina_initialize(self, shunt_ohms=0.2, max_expected_amps=5.0,
-    def ina_initialize(self, shunt_ohms=0.1, max_expected_amps=0.2,
-                       address=0x40, callback=None):
-        # address=0x40, callback=None):
+    def ina_initialize(self, address=0x40, shunt_ohms=0.1,
+                       max_expected_amps=0.2, callback=None):
         """
-        :param shunt_ohms:
+        This method instantiates an INA219 object.
 
-        :param max_expected_amps:
+        :param address: The i2c address of the device
 
-        :param address:
+        :param shunt_ohms: The shunt resistance in ohms
 
-        :param callback:
+        :param max_expected_amps: The maximum expected current in amps
+
+        :param callback: Callback method that will INA219 callbacks
+
+        Note: There is a single callback shared by all INA methods.
 
         """
-
         # make sure that we initialize i2c mode
         self.set_pin_mode_i2c()
 
@@ -1204,7 +1208,6 @@ class PymataRh(threading.Thread):
                                        g_fs, a_fs, m_fs, mode,
                                        mag_scale=mag_scale, g_bias=g_bias,
                                        a_bias=a_bias, m_bias=m_bias)
-        self.mpu_constants = mpu_constants
         self.mpu_callback = callback
 
     def mpu_9250_read_data(self, mode=mpu_constants.MPU9250_READ_CONTINUOUS_ON,
