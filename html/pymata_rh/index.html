@@ -1069,7 +1069,7 @@ class PymataRh(threading.Thread):
                 data.append(item_msb)
             self._send_sysex(PrivateConstants.I2C_REQUEST, data)
 
-    def ina_initialize(self, address=0x40, shunt_ohms=0.2,
+    def ina_initialize(self, address=0x41, shunt_ohms=0.2,
                        max_expected_amps=0.2, callback=None):
         &#34;&#34;&#34;
         This method instantiates an INA219 object.
@@ -3235,7 +3235,7 @@ the WiFi device. Typically this is 3030</p></div>
                 data.append(item_msb)
             self._send_sysex(PrivateConstants.I2C_REQUEST, data)
 
-    def ina_initialize(self, address=0x40, shunt_ohms=0.2,
+    def ina_initialize(self, address=0x41, shunt_ohms=0.2,
                        max_expected_amps=0.2, callback=None):
         &#34;&#34;&#34;
         This method instantiates an INA219 object.
@@ -5183,7 +5183,7 @@ passed in as a list</p></div>
 </details>
 </dd>
 <dt id="pymata_rh.pymata_rh.PymataRh.ina_initialize"><code class="name flex">
-<span>def <span class="ident">ina_initialize</span></span>(<span>self, address=64, shunt_ohms=0.2, max_expected_amps=0.2, callback=None)</span>
+<span>def <span class="ident">ina_initialize</span></span>(<span>self, address=65, shunt_ohms=0.2, max_expected_amps=0.2, callback=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This method instantiates an INA219 object.</p>
@@ -5196,7 +5196,7 @@ passed in as a list</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def ina_initialize(self, address=0x40, shunt_ohms=0.2,
+<pre><code class="python">def ina_initialize(self, address=0x41, shunt_ohms=0.2,
                    max_expected_amps=0.2, callback=None):
     &#34;&#34;&#34;
     This method instantiates an INA219 object.
