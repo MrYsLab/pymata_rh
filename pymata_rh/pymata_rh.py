@@ -912,8 +912,7 @@ class PymataRh(threading.Thread):
                 data.append(item_msb)
             self._send_sysex(PrivateConstants.I2C_REQUEST, data)
 
-    # def ina_initialize(self, shunt_ohms=0.2, max_expected_amps=5.0,
-    def ina_initialize(self, address=0x40, shunt_ohms=0.1,
+    def ina_initialize(self, address=0x40, shunt_ohms=0.2,
                        max_expected_amps=0.2, callback=None):
         """
         This method instantiates an INA219 object.
@@ -1069,10 +1068,10 @@ class PymataRh(threading.Thread):
         return self.ina_last_value_power
 
     def ina_sleep(self):
-        pass
+        self.ina219.ina_sleep()
 
     def ina_wake(self):
-        pass
+        self.ina219.ina_wake()
 
     def mpu_9250_calibrate(self, log=True):
         """
@@ -1162,7 +1161,7 @@ class PymataRh(threading.Thread):
             logging.info(f'Mag Scale: {tuple(settings[14:17])}')
 
     def mpu_9250_initialize(self, address_ak=mpu_constants.AK8963_ADDRESS,
-                            address_mpu=mpu_constants.MPU9250_ADDRESS_68,
+                            address_mpu=mpu_constants.MPU9250_ADDRESS_69,
                             g_fs=mpu_constants.GFS_500,
                             a_fs=mpu_constants.AFS_2G,
                             m_fs=mpu_constants.AK8963_BIT_16,
