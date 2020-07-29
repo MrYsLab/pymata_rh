@@ -15,31 +15,17 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import time
 import sys
-from pymata_rh import pymata_rh
 
+from pymata_rh import pymata_rh
 
 """
 Run a calibration cycle of the mpu9250
 """
 
-def mycb(data):
-    print(f'mycb: {data}')
-
 board = pymata_rh.PymataRh()
-# board.mpu_9250_calibrate()
-# sys.exit(0)
-board.mpu_9250_initialize(callback=mycb)
-# board.mpu_9250_initialize()
-
-board.mpu_9250_read_data()
-
-while True:
-    # print(board.mpu_9250_read_saved_data())
-
-    # print(board.mpu_9250_read_data(mode=board.mpu_constants.MPU9250_READ_CONTINUOUS_OFF))
-    time.sleep(3)
-    # print(board.mpu_9250_read_data())
-
-    # time.sleep(1)
+try:
+    board.mpu_9250_calibrate()
+except KeyboardInterrupt:
+    board.shutdown()
+    sys.exit(0)

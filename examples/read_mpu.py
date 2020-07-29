@@ -16,11 +16,11 @@
 """
 
 import time
-
+import sys
 from pymata_rh import pymata_rh
 
 """
-ina_219
+Read the MPU9250 via callback
 """
 
 
@@ -29,24 +29,14 @@ def my_callback(data):
 
 
 board = pymata_rh.PymataRh()
-board.ina_initialize(callback=my_callback)
 
-board.ina_read_bus_voltage()
-board.ina_read_bus_current()
-board.ina_read_supply_voltage()
-board.ina_read_shunt_voltage()
-board.ina_read_power()
+board.mpu_9250_initialize(callback=my_callback)
+
+board.mpu_9250_read_data()
 
 while True:
-    # poll the previous values
-    print(board.ina_read_bus_voltage_last())
-    print(board.ina_read_bus_current_last())
-    print(board.ina_read_supply_voltage_last())
-    print(board.ina_read_shunt_voltage_last())
-    print(board.ina_read_power_last())
-    print('sleep')
-    board.ina_sleep()
-    time.sleep(1)
-    board.ina_wake()
-    print('awake')
-    board.ina_read_bus_current()
+    try:
+        time.sleep(1)
+    except KeyboardInterrupt:
+        board.shutdown()
+        sys.exit(0)
