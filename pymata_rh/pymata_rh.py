@@ -22,35 +22,36 @@
 
  Note: The Button pin mode is fixed to digital input.
        All other digital pins may be configured as input, output or PWM
+       with the exception of Pin 13 - the board LED.
 
 
-| Pin      | Digital / Analog Pin # |
-| -------- | ---------------------- |
-| Servo1   | 2                      |
-| Servo2   | 3                      |
-| Servo3   | 4                      |
-| Servo4   | 5                      |
-| Servo5   | 6                      |
-| Servo6   | 7                      |
-| Servo7   | 8                      |
-| Servo8   | 9                      |
-|          |                        |
-| Button   | 10                     |
-|          |                        |
-| NeoPixel | 11                     |
-|          |                        |
-| LED      | 13                     |
-|          |                        |
-| RCC1     | 14 / A0                |
-| RCC2     | 15 / A1                |
-| RCC3     | 16 / A2                |
-| RCC4     | 17 / A3                |
-|          |                        |
-| GPS RX   | 39                     |
-| GPS TX   | 40                     |
-|          |                        |
-| Grove 1  | 41 / A27               |
-| Grove 2  | 42 / A28               |
+| Pin Name  | Arduino Digital Pin # | Arduino Analog Pin # | Analog Input | Digital Input | Digital Input Pullup | Digital Output | PWM | Notes                                                                         |
+|:---------:|:---------------------:|:--------------------:|:------------:|:-------------:|:--------------------:|:--------------:|:---:|:-----------------------------------------------------------------------------:|
+| Servo 1   | 2                     |                      |              | X             | X                    | X              | X   |                                                                               |
+| Servo 2   | 3                     |                      |              | X             | X                    | X              | X   |                                                                               |
+| Servo 3   | 4                     |                      |              | X             | X                    | X              | X   |                                                                               |
+| Servo 4   | 5                     |                      |              | X             | X                    | X              | X   |                                                                               |
+| Servo 5   | 6                     |                      |              | X             | X                    | X              | X   |                                                                               |
+| Servo 6   | 7                     |                      |              | X             | X                    | X              | X   |                                                                               |
+| Servo 7   | 8                     |                      |              | X             | X                    | X              | X   |                                                                               |
+| Servo 8   | 9                     |                      |              | X             | X                    | X              | X   |                                                                               |
+|           |                       |                      |              |               |                      |                |     |                                                                               |
+| NeoPixel  | 11                    |                      |              | X             | X                    | X              |     | NeoPixel Devices Not DirectlySupported But Pin May Be Used For Other Purposes |
+|           |                       |                      |              |               |                      |                |     |                                                                               |
+| Board LED | 13                    |                      |              |               |                      | X              |     |                                                                               |
+|           |                       |                      |              |               |                      |                |     |                                                                               |
+| RCC1      | 14                    | 0                    | X            | X             | X                    | X              | X   |                                                                               |
+| RCC2      | 15                    | 1                    | X            | X             | X                    | X              | X   |                                                                               |
+| RCC3      | 16                    | 2                    | X            | X             | X                    | X              | X   |                                                                               |
+| RCC4      | 17                    | 3                    | X            | X             | X                    | X              | X   |                                                                               |
+|           |                       |                      |              |               |                      |                |     |                                                                               |
+| SPI SS    | 35                    |                      |              | X             | X                    | X              |     | SPI Protocol Not Supported But Pins May Be Used For Other Purposes            |
+| SPI MISO  | 36                    |                      |              | X             | X                    | X              |     |                                                                               |
+| SPI MOSI  | 37                    | 23                   | X            | X             | X                    | X              |     |                                                                               |
+| SPI SCK   | 38                    | 24                   | X            | X             | X                    | X              |     |                                                                               |
+|           |                       |                      |              |               |                      |                |     |                                                                               |
+| GPS RX    | 39                    | 25                   | X            | X             | X                    | X              |     | GPS Protocol Not Supported But Pins May Be Used For Other Purposes            |
+| GPS TX    | 40                    | 26                   | X            | X             | X                    | X              |     |                                                                               |
 """
 
 from collections import deque
@@ -124,6 +125,53 @@ class PymataRh(threading.Thread):
                            the WiFi device. Typically this is 3030
 
         """
+        self.pin_validation_map = {  # servo pins
+            2: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            3: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            4: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            5: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            6: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            7: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            8: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            9: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+
+            # NeoPixel
+            11: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP],
+
+            # Board LED
+            13: [PrivateConstants.OUTPUT],
+
+            # RCCs
+            14: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+            15: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+            16: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+            17: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+
+            # SPI
+            35: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP],
+            36: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP],
+            37: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP],
+            38: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP],
+
+            # GPS
+            39: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                 PrivateConstants.PWM],
+            40: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                 PrivateConstants.PWM]}
         self.start_time = time.time()
         # initialize threading parent
         threading.Thread.__init__(self)
@@ -1340,6 +1388,9 @@ class PymataRh(threading.Thread):
         The pin_type for analog input pins = 2
 
         """
+        # adjust pin number
+        adj_pin_number = pin_number + 14
+        self._validate_pin_mode(adj_pin_number, PrivateConstants.ANALOG)
         self._set_pin_mode(pin_number, PrivateConstants.ANALOG,
                            callback=callback,
                            differential=differential)
@@ -1373,6 +1424,8 @@ class PymataRh(threading.Thread):
 
         # if the pin is not currently associated with a DHT device
         # initialize it.
+        self._validate_pin_mode(pin_number, PrivateConstants.INPUT)
+
         if pin_number not in self.dht_list:
             self.dht_list.append(pin_number)
             self.digital_pins[pin_number].cb = callback
@@ -1400,6 +1453,7 @@ class PymataRh(threading.Thread):
         The pin_type for digital input pins = 0
 
         """
+        self._validate_pin_mode(pin_number, PrivateConstants.INPUT)
         self._set_pin_mode(pin_number, PrivateConstants.INPUT, callback)
 
     def set_pin_mode_digital_input_pullup(self, pin_number, callback=None):
@@ -1418,6 +1472,7 @@ class PymataRh(threading.Thread):
         The pin_type for digital input pins with pullups enabled = 11
 
         """
+        self._validate_pin_mode(pin_number, PrivateConstants.PULLUP)
         self._set_pin_mode(pin_number, PrivateConstants.PULLUP, callback)
 
     def set_pin_mode_digital_output(self, pin_number):
@@ -1426,7 +1481,7 @@ class PymataRh(threading.Thread):
 
         :param pin_number: arduino pin number
         """
-
+        self._validate_pin_mode(pin_number, PrivateConstants.OUTPUT)
         self._set_pin_mode(pin_number, PrivateConstants.OUTPUT)
 
     # noinspection PyIncorrectDocstring
@@ -1457,6 +1512,7 @@ class PymataRh(threading.Thread):
         :param pin_number:arduino pin number
 
         """
+        self._validate_pin_mode(pin_number, PrivateConstants.PWM)
         self._set_pin_mode(pin_number, PrivateConstants.PWM)
 
     def set_pin_mode_servo(self, pin, min_pulse=544, max_pulse=2400):
@@ -1470,6 +1526,8 @@ class PymataRh(threading.Thread):
         :param max_pulse: Max pulse width in ms.
 
         """
+        self._validate_pin_mode(pin, PrivateConstants.PWM)
+
         command = [pin, min_pulse & 0x7f, (min_pulse >> 7) & 0x7f,
                    max_pulse & 0x7f,
                    (max_pulse >> 7) & 0x7f]
@@ -1508,6 +1566,10 @@ class PymataRh(threading.Thread):
 
 
         """
+        self._validate_pin_mode(trigger_pin, PrivateConstants.INPUT)
+        self._validate_pin_mode(echo_pin, PrivateConstants.INPUT)
+
+
         # if there is an entry for the trigger pin in existence,
         # ignore the duplicate request.
         if trigger_pin in self.active_sonar_map:
@@ -2195,3 +2257,23 @@ class PymataRh(threading.Thread):
                 self.the_deque.append(ord(payload))
             except Exception:
                 pass
+
+    def _validate_pin_mode(self, pin, mode):
+        """
+        This method validates that for a given pin, it is eligible to
+        be set into the requested mode.
+        If the requested mode is invalid, an exception will be raised.
+        :param pin: pin number
+        :param mode: operational mode
+        :return: True if valid or exception raised for invalid
+        """
+        entry = self.pin_validation_map.get(pin)
+        if entry:
+            if mode in entry:
+                return True
+            else:
+                raise RuntimeError(f'Invalid mode requested for pin {pin}')
+        # raise error
+        raise RuntimeError(f'Pin {pin} not supported.')
+
+
