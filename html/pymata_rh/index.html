@@ -37,120 +37,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 USA</p>
 <p>This class exposes and implements the pymata_rh API for the
 RoboHAT MM1.</p>
-<p>The following table maps RoboHAT MM1 pin names
-to digital pin numbers and analog input pin numbers.</p>
-<p>Note: The Button pin mode is fixed to digital input.
-All other digital pins may be configured as input, output or PWM</p>
-<table>
-<thead>
-<tr>
-<th>Pin</th>
-<th>Digital / Analog Pin #</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Servo1</td>
-<td>2</td>
-</tr>
-<tr>
-<td>Servo2</td>
-<td>3</td>
-</tr>
-<tr>
-<td>Servo3</td>
-<td>4</td>
-</tr>
-<tr>
-<td>Servo4</td>
-<td>5</td>
-</tr>
-<tr>
-<td>Servo5</td>
-<td>6</td>
-</tr>
-<tr>
-<td>Servo6</td>
-<td>7</td>
-</tr>
-<tr>
-<td>Servo7</td>
-<td>8</td>
-</tr>
-<tr>
-<td>Servo8</td>
-<td>9</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Button</td>
-<td>10</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>NeoPixel</td>
-<td>11</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>LED</td>
-<td>13</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>RCC1</td>
-<td>14 / A0</td>
-</tr>
-<tr>
-<td>RCC2</td>
-<td>15 / A1</td>
-</tr>
-<tr>
-<td>RCC3</td>
-<td>16 / A2</td>
-</tr>
-<tr>
-<td>RCC4</td>
-<td>17 / A3</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>GPS RX</td>
-<td>39</td>
-</tr>
-<tr>
-<td>GPS TX</td>
-<td>40</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Grove 1</td>
-<td>41 / A27</td>
-</tr>
-<tr>
-<td>Grove 2</td>
-<td>42 / A28</td>
-</tr>
-</tbody>
-</table>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -174,40 +60,6 @@ All other digital pins may be configured as input, output or PWM</p>
  This class exposes and implements the pymata_rh API for the
  RoboHAT MM1.
 
- The following table maps RoboHAT MM1 pin names
- to digital pin numbers and analog input pin numbers.
-
- Note: The Button pin mode is fixed to digital input.
-       All other digital pins may be configured as input, output or PWM
-
-
-| Pin      | Digital / Analog Pin # |
-| -------- | ---------------------- |
-| Servo1   | 2                      |
-| Servo2   | 3                      |
-| Servo3   | 4                      |
-| Servo4   | 5                      |
-| Servo5   | 6                      |
-| Servo6   | 7                      |
-| Servo7   | 8                      |
-| Servo8   | 9                      |
-|          |                        |
-| Button   | 10                     |
-|          |                        |
-| NeoPixel | 11                     |
-|          |                        |
-| LED      | 13                     |
-|          |                        |
-| RCC1     | 14 / A0                |
-| RCC2     | 15 / A1                |
-| RCC3     | 16 / A2                |
-| RCC4     | 17 / A3                |
-|          |                        |
-| GPS RX   | 39                     |
-| GPS TX   | 40                     |
-|          |                        |
-| Grove 1  | 41 / A27               |
-| Grove 2  | 42 / A28               |
 &#34;&#34;&#34;
 
 from collections import deque
@@ -281,6 +133,53 @@ class PymataRh(threading.Thread):
                            the WiFi device. Typically this is 3030
 
         &#34;&#34;&#34;
+        self.pin_validation_map = {  # servo pins
+            2: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            3: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            4: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            5: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            6: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            7: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            8: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            9: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+
+            # NeoPixel
+            11: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP],
+
+            # Board LED
+            13: [PrivateConstants.OUTPUT],
+
+            # RCCs
+            14: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+            15: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+            16: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+            17: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+
+            # SPI
+            35: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP],
+            36: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP],
+            37: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP],
+            38: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP],
+
+            # GPS
+            39: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                 PrivateConstants.PWM],
+            40: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                 PrivateConstants.PWM]}
         self.start_time = time.time()
         # initialize threading parent
         threading.Thread.__init__(self)
@@ -514,11 +413,11 @@ class PymataRh(threading.Thread):
                 self.shutdown()
             raise RuntimeError(&#39;No Arduino Found or User Aborted Program&#39;)
 
-        print(&#39;\nRetrieving analog map...&#39;)
+        print(&#39;\nAttempting Board Auto-discovery...&#39;)
 
         # try to get an analog pin map. if it comes back as none raise an exception
 
-        report = self.get_analog_map()
+        report = self._get_analog_map()
         if not report:
             if self.shutdown_on_exception:
                 self.shutdown()
@@ -535,8 +434,7 @@ class PymataRh(threading.Thread):
                     analog_data = PinData(self.the_pin_data_lock)
                     self.analog_pins.append(analog_data)
 
-            print(f&#39;Auto-discovery complete. Found {len(self.digital_pins)} Digital Pins&#39;
-                  f&#39; and {len(self.analog_pins)} Analog Pins\n\n&#39;)
+            print(f&#39;Auto-discovery complete.&#39;)
             self.first_analog_pin = len(self.digital_pins) - len(self.analog_pins)
         except KeyboardInterrupt:
             if self.shutdown_on_exception:
@@ -778,7 +676,7 @@ class PymataRh(threading.Thread):
                    PrivateConstants.REPORTING_ENABLE]
         self._send_command(command)
 
-    def get_analog_map(self):
+    def _get_analog_map(self):
         &#34;&#34;&#34;
         This method requests a Firmata analog map query and returns the
         results.
@@ -802,19 +700,6 @@ class PymataRh(threading.Thread):
             # time.sleep(self.sleep_tune)
             time.sleep(.01)
         return self.query_reply_data.get(PrivateConstants.ANALOG_MAPPING_RESPONSE)
-
-    def get_capability_report(self):
-        &#34;&#34;&#34;
-        This method requests and returns a Firmata capability query report
-
-        :returns: A capability report in the form of a list
-        &#34;&#34;&#34;
-
-        self._send_sysex(PrivateConstants.CAPABILITY_QUERY)
-        while self.query_reply_data.get(
-                PrivateConstants.CAPABILITY_RESPONSE) is None:
-            time.sleep(self.sleep_tune)
-        return self.query_reply_data.get(PrivateConstants.CAPABILITY_RESPONSE)
 
     def get_firmware_version(self):
         &#34;&#34;&#34;
@@ -863,13 +748,12 @@ class PymataRh(threading.Thread):
 
         I2C     = 0x06  # pin included in I2C setup
 
-        STEPPER = 0x08  # digital pin in stepper mode
-
         PULLUP  = 0x0b  # digital pin in input pullup mode
 
         SONAR   = 0x0c  # digital pin in SONAR mode
 
-        TONE    = 0x0d  # digital pin in tone mode
+        DHT     = 0x0f
+
 
         :param pin: Pin of interest
 
@@ -1497,6 +1381,9 @@ class PymataRh(threading.Thread):
         The pin_type for analog input pins = 2
 
         &#34;&#34;&#34;
+        # adjust pin number
+        adj_pin_number = pin_number + 14
+        self._validate_pin_mode(adj_pin_number, PrivateConstants.ANALOG)
         self._set_pin_mode(pin_number, PrivateConstants.ANALOG,
                            callback=callback,
                            differential=differential)
@@ -1530,6 +1417,8 @@ class PymataRh(threading.Thread):
 
         # if the pin is not currently associated with a DHT device
         # initialize it.
+        self._validate_pin_mode(pin_number, PrivateConstants.INPUT)
+
         if pin_number not in self.dht_list:
             self.dht_list.append(pin_number)
             self.digital_pins[pin_number].cb = callback
@@ -1557,6 +1446,7 @@ class PymataRh(threading.Thread):
         The pin_type for digital input pins = 0
 
         &#34;&#34;&#34;
+        self._validate_pin_mode(pin_number, PrivateConstants.INPUT)
         self._set_pin_mode(pin_number, PrivateConstants.INPUT, callback)
 
     def set_pin_mode_digital_input_pullup(self, pin_number, callback=None):
@@ -1575,6 +1465,7 @@ class PymataRh(threading.Thread):
         The pin_type for digital input pins with pullups enabled = 11
 
         &#34;&#34;&#34;
+        self._validate_pin_mode(pin_number, PrivateConstants.PULLUP)
         self._set_pin_mode(pin_number, PrivateConstants.PULLUP, callback)
 
     def set_pin_mode_digital_output(self, pin_number):
@@ -1583,7 +1474,7 @@ class PymataRh(threading.Thread):
 
         :param pin_number: arduino pin number
         &#34;&#34;&#34;
-
+        self._validate_pin_mode(pin_number, PrivateConstants.OUTPUT)
         self._set_pin_mode(pin_number, PrivateConstants.OUTPUT)
 
     # noinspection PyIncorrectDocstring
@@ -1614,6 +1505,7 @@ class PymataRh(threading.Thread):
         :param pin_number:arduino pin number
 
         &#34;&#34;&#34;
+        self._validate_pin_mode(pin_number, PrivateConstants.PWM)
         self._set_pin_mode(pin_number, PrivateConstants.PWM)
 
     def set_pin_mode_servo(self, pin, min_pulse=544, max_pulse=2400):
@@ -1627,6 +1519,8 @@ class PymataRh(threading.Thread):
         :param max_pulse: Max pulse width in ms.
 
         &#34;&#34;&#34;
+        self._validate_pin_mode(pin, PrivateConstants.PWM)
+
         command = [pin, min_pulse &amp; 0x7f, (min_pulse &gt;&gt; 7) &amp; 0x7f,
                    max_pulse &amp; 0x7f,
                    (max_pulse &gt;&gt; 7) &amp; 0x7f]
@@ -1665,6 +1559,10 @@ class PymataRh(threading.Thread):
 
 
         &#34;&#34;&#34;
+        self._validate_pin_mode(trigger_pin, PrivateConstants.INPUT)
+        self._validate_pin_mode(echo_pin, PrivateConstants.INPUT)
+
+
         # if there is an entry for the trigger pin in existence,
         # ignore the duplicate request.
         if trigger_pin in self.active_sonar_map:
@@ -2351,7 +2249,25 @@ class PymataRh(threading.Thread):
                 payload = self.sock.recv(1)
                 self.the_deque.append(ord(payload))
             except Exception:
-                pass</code></pre>
+                pass
+
+    def _validate_pin_mode(self, pin, mode):
+        &#34;&#34;&#34;
+        This method validates that for a given pin, it is eligible to
+        be set into the requested mode.
+        If the requested mode is invalid, an exception will be raised.
+        :param pin: pin number
+        :param mode: operational mode
+        :return: True if valid or exception raised for invalid
+        &#34;&#34;&#34;
+        entry = self.pin_validation_map.get(pin)
+        if entry:
+            if mode in entry:
+                return True
+            else:
+                raise RuntimeError(f&#39;Invalid mode requested for pin {pin}&#39;)
+        # raise error
+        raise RuntimeError(f&#39;Pin {pin} not supported.&#39;)</code></pre>
 </details>
 </section>
 <section>
@@ -2447,6 +2363,53 @@ the WiFi device. Typically this is 3030</p></div>
                            the WiFi device. Typically this is 3030
 
         &#34;&#34;&#34;
+        self.pin_validation_map = {  # servo pins
+            2: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            3: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            4: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            5: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            6: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            7: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            8: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+            9: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.PWM],
+
+            # NeoPixel
+            11: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP],
+
+            # Board LED
+            13: [PrivateConstants.OUTPUT],
+
+            # RCCs
+            14: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+            15: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+            16: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+            17: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+
+            # SPI
+            35: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP],
+            36: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP],
+            37: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP],
+            38: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
+                 PrivateConstants.PULLUP],
+
+            # GPS
+            39: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                 PrivateConstants.PWM],
+            40: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                 PrivateConstants.PWM]}
         self.start_time = time.time()
         # initialize threading parent
         threading.Thread.__init__(self)
@@ -2680,11 +2643,11 @@ the WiFi device. Typically this is 3030</p></div>
                 self.shutdown()
             raise RuntimeError(&#39;No Arduino Found or User Aborted Program&#39;)
 
-        print(&#39;\nRetrieving analog map...&#39;)
+        print(&#39;\nAttempting Board Auto-discovery...&#39;)
 
         # try to get an analog pin map. if it comes back as none raise an exception
 
-        report = self.get_analog_map()
+        report = self._get_analog_map()
         if not report:
             if self.shutdown_on_exception:
                 self.shutdown()
@@ -2701,8 +2664,7 @@ the WiFi device. Typically this is 3030</p></div>
                     analog_data = PinData(self.the_pin_data_lock)
                     self.analog_pins.append(analog_data)
 
-            print(f&#39;Auto-discovery complete. Found {len(self.digital_pins)} Digital Pins&#39;
-                  f&#39; and {len(self.analog_pins)} Analog Pins\n\n&#39;)
+            print(f&#39;Auto-discovery complete.&#39;)
             self.first_analog_pin = len(self.digital_pins) - len(self.analog_pins)
         except KeyboardInterrupt:
             if self.shutdown_on_exception:
@@ -2944,7 +2906,7 @@ the WiFi device. Typically this is 3030</p></div>
                    PrivateConstants.REPORTING_ENABLE]
         self._send_command(command)
 
-    def get_analog_map(self):
+    def _get_analog_map(self):
         &#34;&#34;&#34;
         This method requests a Firmata analog map query and returns the
         results.
@@ -2968,19 +2930,6 @@ the WiFi device. Typically this is 3030</p></div>
             # time.sleep(self.sleep_tune)
             time.sleep(.01)
         return self.query_reply_data.get(PrivateConstants.ANALOG_MAPPING_RESPONSE)
-
-    def get_capability_report(self):
-        &#34;&#34;&#34;
-        This method requests and returns a Firmata capability query report
-
-        :returns: A capability report in the form of a list
-        &#34;&#34;&#34;
-
-        self._send_sysex(PrivateConstants.CAPABILITY_QUERY)
-        while self.query_reply_data.get(
-                PrivateConstants.CAPABILITY_RESPONSE) is None:
-            time.sleep(self.sleep_tune)
-        return self.query_reply_data.get(PrivateConstants.CAPABILITY_RESPONSE)
 
     def get_firmware_version(self):
         &#34;&#34;&#34;
@@ -3029,13 +2978,12 @@ the WiFi device. Typically this is 3030</p></div>
 
         I2C     = 0x06  # pin included in I2C setup
 
-        STEPPER = 0x08  # digital pin in stepper mode
-
         PULLUP  = 0x0b  # digital pin in input pullup mode
 
         SONAR   = 0x0c  # digital pin in SONAR mode
 
-        TONE    = 0x0d  # digital pin in tone mode
+        DHT     = 0x0f
+
 
         :param pin: Pin of interest
 
@@ -3663,6 +3611,9 @@ the WiFi device. Typically this is 3030</p></div>
         The pin_type for analog input pins = 2
 
         &#34;&#34;&#34;
+        # adjust pin number
+        adj_pin_number = pin_number + 14
+        self._validate_pin_mode(adj_pin_number, PrivateConstants.ANALOG)
         self._set_pin_mode(pin_number, PrivateConstants.ANALOG,
                            callback=callback,
                            differential=differential)
@@ -3696,6 +3647,8 @@ the WiFi device. Typically this is 3030</p></div>
 
         # if the pin is not currently associated with a DHT device
         # initialize it.
+        self._validate_pin_mode(pin_number, PrivateConstants.INPUT)
+
         if pin_number not in self.dht_list:
             self.dht_list.append(pin_number)
             self.digital_pins[pin_number].cb = callback
@@ -3723,6 +3676,7 @@ the WiFi device. Typically this is 3030</p></div>
         The pin_type for digital input pins = 0
 
         &#34;&#34;&#34;
+        self._validate_pin_mode(pin_number, PrivateConstants.INPUT)
         self._set_pin_mode(pin_number, PrivateConstants.INPUT, callback)
 
     def set_pin_mode_digital_input_pullup(self, pin_number, callback=None):
@@ -3741,6 +3695,7 @@ the WiFi device. Typically this is 3030</p></div>
         The pin_type for digital input pins with pullups enabled = 11
 
         &#34;&#34;&#34;
+        self._validate_pin_mode(pin_number, PrivateConstants.PULLUP)
         self._set_pin_mode(pin_number, PrivateConstants.PULLUP, callback)
 
     def set_pin_mode_digital_output(self, pin_number):
@@ -3749,7 +3704,7 @@ the WiFi device. Typically this is 3030</p></div>
 
         :param pin_number: arduino pin number
         &#34;&#34;&#34;
-
+        self._validate_pin_mode(pin_number, PrivateConstants.OUTPUT)
         self._set_pin_mode(pin_number, PrivateConstants.OUTPUT)
 
     # noinspection PyIncorrectDocstring
@@ -3780,6 +3735,7 @@ the WiFi device. Typically this is 3030</p></div>
         :param pin_number:arduino pin number
 
         &#34;&#34;&#34;
+        self._validate_pin_mode(pin_number, PrivateConstants.PWM)
         self._set_pin_mode(pin_number, PrivateConstants.PWM)
 
     def set_pin_mode_servo(self, pin, min_pulse=544, max_pulse=2400):
@@ -3793,6 +3749,8 @@ the WiFi device. Typically this is 3030</p></div>
         :param max_pulse: Max pulse width in ms.
 
         &#34;&#34;&#34;
+        self._validate_pin_mode(pin, PrivateConstants.PWM)
+
         command = [pin, min_pulse &amp; 0x7f, (min_pulse &gt;&gt; 7) &amp; 0x7f,
                    max_pulse &amp; 0x7f,
                    (max_pulse &gt;&gt; 7) &amp; 0x7f]
@@ -3831,6 +3789,10 @@ the WiFi device. Typically this is 3030</p></div>
 
 
         &#34;&#34;&#34;
+        self._validate_pin_mode(trigger_pin, PrivateConstants.INPUT)
+        self._validate_pin_mode(echo_pin, PrivateConstants.INPUT)
+
+
         # if there is an entry for the trigger pin in existence,
         # ignore the duplicate request.
         if trigger_pin in self.active_sonar_map:
@@ -4517,7 +4479,25 @@ the WiFi device. Typically this is 3030</p></div>
                 payload = self.sock.recv(1)
                 self.the_deque.append(ord(payload))
             except Exception:
-                pass</code></pre>
+                pass
+
+    def _validate_pin_mode(self, pin, mode):
+        &#34;&#34;&#34;
+        This method validates that for a given pin, it is eligible to
+        be set into the requested mode.
+        If the requested mode is invalid, an exception will be raised.
+        :param pin: pin number
+        :param mode: operational mode
+        :return: True if valid or exception raised for invalid
+        &#34;&#34;&#34;
+        entry = self.pin_validation_map.get(pin)
+        if entry:
+            if mode in entry:
+                return True
+            else:
+                raise RuntimeError(f&#39;Invalid mode requested for pin {pin}&#39;)
+        # raise error
+        raise RuntimeError(f&#39;Pin {pin} not supported.&#39;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -4755,67 +4735,6 @@ in the "port" - this is part of Firmata's protocol specification.</p>
     self._send_command(command)</code></pre>
 </details>
 </dd>
-<dt id="pymata_rh.pymata_rh.PymataRh.get_analog_map"><code class="name flex">
-<span>def <span class="ident">get_analog_map</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>This method requests a Firmata analog map query and returns the
-results.</p>
-<p>:returns: An analog map response or None if a timeout occurs</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_analog_map(self):
-    &#34;&#34;&#34;
-    This method requests a Firmata analog map query and returns the
-    results.
-
-    :returns: An analog map response or None if a timeout occurs
-    &#34;&#34;&#34;
-    # get the current time to make sure a report is retrieved
-    current_time = time.time()
-
-    # if we do not have existing report results, send a Firmata
-    # message to request one
-
-    self._send_sysex(PrivateConstants.ANALOG_MAPPING_QUERY)
-    # wait for the report results to return for 4 seconds
-    # if the timer expires, return None
-    while self.query_reply_data.get(
-            PrivateConstants.ANALOG_MAPPING_RESPONSE) is None:
-        elapsed_time = time.time()
-        if elapsed_time - current_time &gt; 4:
-            return None
-        # time.sleep(self.sleep_tune)
-        time.sleep(.01)
-    return self.query_reply_data.get(PrivateConstants.ANALOG_MAPPING_RESPONSE)</code></pre>
-</details>
-</dd>
-<dt id="pymata_rh.pymata_rh.PymataRh.get_capability_report"><code class="name flex">
-<span>def <span class="ident">get_capability_report</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>This method requests and returns a Firmata capability query report</p>
-<p>:returns: A capability report in the form of a list</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_capability_report(self):
-    &#34;&#34;&#34;
-    This method requests and returns a Firmata capability query report
-
-    :returns: A capability report in the form of a list
-    &#34;&#34;&#34;
-
-    self._send_sysex(PrivateConstants.CAPABILITY_QUERY)
-    while self.query_reply_data.get(
-            PrivateConstants.CAPABILITY_RESPONSE) is None:
-        time.sleep(self.sleep_tune)
-    return self.query_reply_data.get(PrivateConstants.CAPABILITY_RESPONSE)</code></pre>
-</details>
-</dd>
 <dt id="pymata_rh.pymata_rh.PymataRh.get_firmware_version"><code class="name flex">
 <span>def <span class="ident">get_firmware_version</span></span>(<span>self)</span>
 </code></dt>
@@ -4867,17 +4786,14 @@ Pin modes reported:</p>
 <p>I2C
 = 0x06
 # pin included in I2C setup</p>
-<p>STEPPER = 0x08
-# digital pin in stepper mode</p>
 <p>PULLUP
 = 0x0b
 # digital pin in input pullup mode</p>
 <p>SONAR
 = 0x0c
 # digital pin in SONAR mode</p>
-<p>TONE
-= 0x0d
-# digital pin in tone mode</p>
+<p>DHT
+= 0x0f</p>
 <p>:param pin: Pin of interest</p>
 <p>:returns: pin state report</p></div>
 <details class="source">
@@ -4901,13 +4817,12 @@ Pin modes reported:</p>
 
     I2C     = 0x06  # pin included in I2C setup
 
-    STEPPER = 0x08  # digital pin in stepper mode
-
     PULLUP  = 0x0b  # digital pin in input pullup mode
 
     SONAR   = 0x0c  # digital pin in SONAR mode
 
-    TONE    = 0x0d  # digital pin in tone mode
+    DHT     = 0x0f
+
 
     :param pin: Pin of interest
 
@@ -5870,6 +5785,9 @@ to be invoked.</p>
     The pin_type for analog input pins = 2
 
     &#34;&#34;&#34;
+    # adjust pin number
+    adj_pin_number = pin_number + 14
+    self._validate_pin_mode(adj_pin_number, PrivateConstants.ANALOG)
     self._set_pin_mode(pin_number, PrivateConstants.ANALOG,
                        callback=callback,
                        differential=differential)</code></pre>
@@ -5928,6 +5846,8 @@ to be invoked.</p>
 
     # if the pin is not currently associated with a DHT device
     # initialize it.
+    self._validate_pin_mode(pin_number, PrivateConstants.INPUT)
+
     if pin_number not in self.dht_list:
         self.dht_list.append(pin_number)
         self.digital_pins[pin_number].cb = callback
@@ -5970,6 +5890,7 @@ to be invoked.</p>
     The pin_type for digital input pins = 0
 
     &#34;&#34;&#34;
+    self._validate_pin_mode(pin_number, PrivateConstants.INPUT)
     self._set_pin_mode(pin_number, PrivateConstants.INPUT, callback)</code></pre>
 </details>
 </dd>
@@ -6003,6 +5924,7 @@ to be invoked.</p>
     The pin_type for digital input pins with pullups enabled = 11
 
     &#34;&#34;&#34;
+    self._validate_pin_mode(pin_number, PrivateConstants.PULLUP)
     self._set_pin_mode(pin_number, PrivateConstants.PULLUP, callback)</code></pre>
 </details>
 </dd>
@@ -6022,7 +5944,7 @@ to be invoked.</p>
 
     :param pin_number: arduino pin number
     &#34;&#34;&#34;
-
+    self._validate_pin_mode(pin_number, PrivateConstants.OUTPUT)
     self._set_pin_mode(pin_number, PrivateConstants.OUTPUT)</code></pre>
 </details>
 </dd>
@@ -6080,6 +6002,7 @@ See i2c_read, i2c_read_continuous, or i2c_read_restart_transmission.</p></div>
     :param pin_number:arduino pin number
 
     &#34;&#34;&#34;
+    self._validate_pin_mode(pin_number, PrivateConstants.PWM)
     self._set_pin_mode(pin_number, PrivateConstants.PWM)</code></pre>
 </details>
 </dd>
@@ -6106,6 +6029,8 @@ See i2c_read, i2c_read_continuous, or i2c_read_restart_transmission.</p></div>
     :param max_pulse: Max pulse width in ms.
 
     &#34;&#34;&#34;
+    self._validate_pin_mode(pin, PrivateConstants.PWM)
+
     command = [pin, min_pulse &amp; 0x7f, (min_pulse &gt;&gt; 7) &amp; 0x7f,
                max_pulse &amp; 0x7f,
                (max_pulse &gt;&gt; 7) &amp; 0x7f]
@@ -6168,6 +6093,10 @@ the latest value received is different than the previous.</p>
 
 
     &#34;&#34;&#34;
+    self._validate_pin_mode(trigger_pin, PrivateConstants.INPUT)
+    self._validate_pin_mode(echo_pin, PrivateConstants.INPUT)
+
+
     # if there is an entry for the trigger pin in existence,
     # ignore the duplicate request.
     if trigger_pin in self.active_sonar_map:
@@ -6335,8 +6264,6 @@ for that pin. If there is no data, the value is set to None.</p>
 <li><code><a title="pymata_rh.pymata_rh.PymataRh.disable_digital_reporting" href="#pymata_rh.pymata_rh.PymataRh.disable_digital_reporting">disable_digital_reporting</a></code></li>
 <li><code><a title="pymata_rh.pymata_rh.PymataRh.enable_analog_reporting" href="#pymata_rh.pymata_rh.PymataRh.enable_analog_reporting">enable_analog_reporting</a></code></li>
 <li><code><a title="pymata_rh.pymata_rh.PymataRh.enable_digital_reporting" href="#pymata_rh.pymata_rh.PymataRh.enable_digital_reporting">enable_digital_reporting</a></code></li>
-<li><code><a title="pymata_rh.pymata_rh.PymataRh.get_analog_map" href="#pymata_rh.pymata_rh.PymataRh.get_analog_map">get_analog_map</a></code></li>
-<li><code><a title="pymata_rh.pymata_rh.PymataRh.get_capability_report" href="#pymata_rh.pymata_rh.PymataRh.get_capability_report">get_capability_report</a></code></li>
 <li><code><a title="pymata_rh.pymata_rh.PymataRh.get_firmware_version" href="#pymata_rh.pymata_rh.PymataRh.get_firmware_version">get_firmware_version</a></code></li>
 <li><code><a title="pymata_rh.pymata_rh.PymataRh.get_pin_state" href="#pymata_rh.pymata_rh.PymataRh.get_pin_state">get_pin_state</a></code></li>
 <li><code><a title="pymata_rh.pymata_rh.PymataRh.get_protocol_version" href="#pymata_rh.pymata_rh.PymataRh.get_protocol_version">get_protocol_version</a></code></li>

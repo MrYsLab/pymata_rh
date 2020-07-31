@@ -17,41 +17,6 @@
  This class exposes and implements the pymata_rh API for the
  RoboHAT MM1.
 
- The following table maps RoboHAT MM1 pin names
- to digital pin numbers and analog input pin numbers.
-
- Note: The Button pin mode is fixed to digital input.
-       All other digital pins may be configured as input, output or PWM
-       with the exception of Pin 13 - the board LED.
-
-
-| Pin Name  | Arduino Digital Pin # | Arduino Analog Pin # | Analog Input | Digital Input | Digital Input Pullup | Digital Output | PWM | Notes                                                                         |
-|:---------:|:---------------------:|:--------------------:|:------------:|:-------------:|:--------------------:|:--------------:|:---:|:-----------------------------------------------------------------------------:|
-| Servo 1   | 2                     |                      |              | X             | X                    | X              | X   |                                                                               |
-| Servo 2   | 3                     |                      |              | X             | X                    | X              | X   |                                                                               |
-| Servo 3   | 4                     |                      |              | X             | X                    | X              | X   |                                                                               |
-| Servo 4   | 5                     |                      |              | X             | X                    | X              | X   |                                                                               |
-| Servo 5   | 6                     |                      |              | X             | X                    | X              | X   |                                                                               |
-| Servo 6   | 7                     |                      |              | X             | X                    | X              | X   |                                                                               |
-| Servo 7   | 8                     |                      |              | X             | X                    | X              | X   |                                                                               |
-| Servo 8   | 9                     |                      |              | X             | X                    | X              | X   |                                                                               |
-|           |                       |                      |              |               |                      |                |     |                                                                               |
-| NeoPixel  | 11                    |                      |              | X             | X                    | X              |     | NeoPixel Devices Not DirectlySupported But Pin May Be Used For Other Purposes |
-|           |                       |                      |              |               |                      |                |     |                                                                               |
-| Board LED | 13                    |                      |              |               |                      | X              |     |                                                                               |
-|           |                       |                      |              |               |                      |                |     |                                                                               |
-| RCC1      | 14                    | 0                    | X            | X             | X                    | X              | X   |                                                                               |
-| RCC2      | 15                    | 1                    | X            | X             | X                    | X              | X   |                                                                               |
-| RCC3      | 16                    | 2                    | X            | X             | X                    | X              | X   |                                                                               |
-| RCC4      | 17                    | 3                    | X            | X             | X                    | X              | X   |                                                                               |
-|           |                       |                      |              |               |                      |                |     |                                                                               |
-| SPI SS    | 35                    |                      |              | X             | X                    | X              |     | SPI Protocol Not Supported But Pins May Be Used For Other Purposes            |
-| SPI MISO  | 36                    |                      |              | X             | X                    | X              |     |                                                                               |
-| SPI MOSI  | 37                    | 23                   | X            | X             | X                    | X              |     |                                                                               |
-| SPI SCK   | 38                    | 24                   | X            | X             | X                    | X              |     |                                                                               |
-|           |                       |                      |              |               |                      |                |     |                                                                               |
-| GPS RX    | 39                    | 25                   | X            | X             | X                    | X              |     | GPS Protocol Not Supported But Pins May Be Used For Other Purposes            |
-| GPS TX    | 40                    | 26                   | X            | X             | X                    | X              |     |                                                                               |
 """
 
 from collections import deque
@@ -405,11 +370,11 @@ class PymataRh(threading.Thread):
                 self.shutdown()
             raise RuntimeError('No Arduino Found or User Aborted Program')
 
-        print('\nRetrieving analog map...')
+        print('\nAttempting Board Auto-discovery...')
 
         # try to get an analog pin map. if it comes back as none raise an exception
 
-        report = self.get_analog_map()
+        report = self._get_analog_map()
         if not report:
             if self.shutdown_on_exception:
                 self.shutdown()
@@ -426,8 +391,7 @@ class PymataRh(threading.Thread):
                     analog_data = PinData(self.the_pin_data_lock)
                     self.analog_pins.append(analog_data)
 
-            print(f'Auto-discovery complete. Found {len(self.digital_pins)} Digital Pins'
-                  f' and {len(self.analog_pins)} Analog Pins\n\n')
+            print(f'Auto-discovery complete.')
             self.first_analog_pin = len(self.digital_pins) - len(self.analog_pins)
         except KeyboardInterrupt:
             if self.shutdown_on_exception:
@@ -669,7 +633,7 @@ class PymataRh(threading.Thread):
                    PrivateConstants.REPORTING_ENABLE]
         self._send_command(command)
 
-    def get_analog_map(self):
+    def _get_analog_map(self):
         """
         This method requests a Firmata analog map query and returns the
         results.
@@ -693,19 +657,6 @@ class PymataRh(threading.Thread):
             # time.sleep(self.sleep_tune)
             time.sleep(.01)
         return self.query_reply_data.get(PrivateConstants.ANALOG_MAPPING_RESPONSE)
-
-    def get_capability_report(self):
-        """
-        This method requests and returns a Firmata capability query report
-
-        :returns: A capability report in the form of a list
-        """
-
-        self._send_sysex(PrivateConstants.CAPABILITY_QUERY)
-        while self.query_reply_data.get(
-                PrivateConstants.CAPABILITY_RESPONSE) is None:
-            time.sleep(self.sleep_tune)
-        return self.query_reply_data.get(PrivateConstants.CAPABILITY_RESPONSE)
 
     def get_firmware_version(self):
         """
@@ -754,13 +705,12 @@ class PymataRh(threading.Thread):
 
         I2C     = 0x06  # pin included in I2C setup
 
-        STEPPER = 0x08  # digital pin in stepper mode
-
         PULLUP  = 0x0b  # digital pin in input pullup mode
 
         SONAR   = 0x0c  # digital pin in SONAR mode
 
-        TONE    = 0x0d  # digital pin in tone mode
+        DHT     = 0x0f
+
 
         :param pin: Pin of interest
 
