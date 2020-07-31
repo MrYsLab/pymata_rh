@@ -296,7 +296,7 @@ class PymataRh(threading.Thread):
         self.active_sonar_map = {}
 
         # first analog pin number
-        self.first_analog_pin = None
+        self.first_analog_pin = 14
 
         # flag to indicate we are in shutdown mode
         self.shutdown_flag = False
@@ -392,7 +392,7 @@ class PymataRh(threading.Thread):
                     self.analog_pins.append(analog_data)
 
             print(f'Auto-discovery complete.')
-            self.first_analog_pin = len(self.digital_pins) - len(self.analog_pins)
+            # self.first_analog_pin = len(self.digital_pins) - len(self.analog_pins)
         except KeyboardInterrupt:
             if self.shutdown_on_exception:
                 self.shutdown()
