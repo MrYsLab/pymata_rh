@@ -47,7 +47,6 @@ class PymataRh(threading.Thread):
     It uses threading to accommodate concurrency.
     It includes the public API methods as well as
     a set of private methods.
-
     """
 
     # noinspection PyPep8,PyPep8,PyPep8
@@ -95,10 +94,10 @@ class PymataRh(threading.Thread):
                 PrivateConstants.PWM],
             3: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
                 PrivateConstants.PWM],
-            4: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
-                PrivateConstants.PWM],
-            5: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
-                PrivateConstants.PWM],
+            4: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,],
+                # PrivateConstants.PWM],
+            5: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,],
+                # PrivateConstants.PWM],
             6: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
                 PrivateConstants.PWM],
             7: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
@@ -122,22 +121,9 @@ class PymataRh(threading.Thread):
             16: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
                  PrivateConstants.PULLUP, PrivateConstants.PWM],
             17: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
-                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+                 PrivateConstants.PULLUP, PrivateConstants.PWM],}
 
-            # SPI
-            35: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP],
-            36: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP],
-            37: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
-                 PrivateConstants.PULLUP],
-            38: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
-                 PrivateConstants.PULLUP],
 
-            # GPS
-            39: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
-                 PrivateConstants.PWM],
-            40: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
-                 PrivateConstants.PWM]}
-        self.start_time = time.time()
         # initialize threading parent
         threading.Thread.__init__(self)
 
@@ -1290,8 +1276,12 @@ class PymataRh(threading.Thread):
             command = [PrivateConstants.PWM_MESSAGE + pin, value & 0x7f,
                        (value >> 7) & 0x7f]
             self._send_command(command)
+            time.sleep(.001)
+            self._send_command(command)
+
         else:
             self._pwm_write_extended(pin, value)
+
 
     def _pwm_write_extended(self, pin, data):
         """
@@ -1306,6 +1296,8 @@ class PymataRh(threading.Thread):
         """
         pwm_data = [pin, data & 0x7f, (data >> 7) & 0x7f,
                     (data >> 14) & 0x7f]
+        self._send_sysex(PrivateConstants.EXTENDED_PWM, pwm_data)
+        time.sleep(.001)
         self._send_sysex(PrivateConstants.EXTENDED_PWM, pwm_data)
 
     def send_reset(self):
