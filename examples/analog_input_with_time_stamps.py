@@ -25,7 +25,7 @@ polling. Time stamps are provided in both "cooked" and raw form
 """
 
 # Setup a pin for analog input and monitor its changes
-ANALOG_PIN = 0  # arduino pin number
+ANALOG_PIN = 3 # arduino pin number
 POLL_TIME = 5  # number of seconds between polls
 
 # Callback data indices
@@ -69,6 +69,7 @@ def analog_in(my_board, pin):
     :param pin: Arduino pin number
     """
     my_board.set_pin_mode_analog_input(pin, callback=the_callback, differential=5)
+
     # run forever waiting for input changes
     try:
         while True:

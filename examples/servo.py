@@ -36,22 +36,26 @@ def servo(my_board, pin):
     """
 
     # set the pin mode
-    my_board.set_pin_mode_servo(pin)
+    my_board.set_pin_mode_servo(pin, min_pulse=44, max_pulse=500)
 
     # set the servo to 0 degrees
     my_board.servo_write(pin, 0)
+
     time.sleep(1)
     # set the servo to 90 degrees
     my_board.servo_write(pin, 90)
+
+
     time.sleep(1)
     # set the servo to 180 degrees
     my_board.servo_write(pin, 180)
+    time.sleep(1)
 
 
 board = pymata_rh.PymataRh()
 
 try:
-    servo(board, 2)
+    servo(board, 9)
 except KeyboardInterrupt:
     board.shutdown()
     sys.exit(0)

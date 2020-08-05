@@ -94,10 +94,8 @@ class PymataRh(threading.Thread):
                 PrivateConstants.PWM],
             3: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
                 PrivateConstants.PWM],
-            4: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,],
-                # PrivateConstants.PWM],
-            5: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,],
-                # PrivateConstants.PWM],
+            4: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP, ],
+            5: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP, ],
             6: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
                 PrivateConstants.PWM],
             7: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
@@ -121,8 +119,7 @@ class PymataRh(threading.Thread):
             16: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
                  PrivateConstants.PULLUP, PrivateConstants.PWM],
             17: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
-                 PrivateConstants.PULLUP, PrivateConstants.PWM],}
-
+                 PrivateConstants.PULLUP, PrivateConstants.PWM], }
 
         # initialize threading parent
         threading.Thread.__init__(self)
@@ -155,7 +152,7 @@ class PymataRh(threading.Thread):
         # instance variable
         self.ina219 = None
 
-        # callback function
+        # ina219 callback function
         self.ina219_callback = None
 
         # ina_219 values - last values retrieved
@@ -1282,7 +1279,6 @@ class PymataRh(threading.Thread):
         else:
             self._pwm_write_extended(pin, value)
 
-
     def _pwm_write_extended(self, pin, data):
         """
         This method will send an extended-data analog write command to the
@@ -1510,7 +1506,6 @@ class PymataRh(threading.Thread):
         """
         self._validate_pin_mode(trigger_pin, PrivateConstants.INPUT)
         self._validate_pin_mode(echo_pin, PrivateConstants.INPUT)
-
 
         # if there is an entry for the trigger pin in existence,
         # ignore the duplicate request.
@@ -2217,5 +2212,3 @@ class PymataRh(threading.Thread):
                 raise RuntimeError(f'Invalid mode requested for pin {pin}')
         # raise error
         raise RuntimeError(f'Pin {pin} not supported.')
-
-

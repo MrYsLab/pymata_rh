@@ -25,7 +25,7 @@ Both polling and callback are being used in this example.
 """
 
 # Setup a pin for analog input and monitor its changes
-DIGITAL_PIN = 14  # arduino pin number
+DIGITAL_PIN = 4  # arduino pin number
 POLL_TIME = 5  # number of seconds between polls
 
 # Callback data indices
@@ -60,6 +60,9 @@ def digital_in(my_board, pin):
 
     # set the pin mode
     my_board.set_pin_mode_digital_input(pin, callback=the_callback)
+    # my_board.set_pin_mode_digital_input_pullup(pin, callback=the_callback)
+    # my_board.set_pin_mode_digital_input(pin, callback=the_callback)
+
 
     while True:
         try:

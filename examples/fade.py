@@ -14,45 +14,43 @@
  along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
+
 import sys
 import time
 
 from pymata_rh import pymata_rh
 
 """
-Setup a pin for digital output and output a signal
-and toggle the pin. Do this 4 times.
+Setup a pin with an LED for PWM and fade the pin intensity
 """
 
-# some globals
-DIGITAL_PIN = 3  # arduino pin number
 
-
-def blink(my_board, pin):
+def fade(my_board, pin):
     """
-    This function will to toggle a digital pin.
+    This function will set an LED and set it to
+    several PWM intensities.
 
     :param my_board: an PymataExpress instance
     :param pin: pin to be controlled
     """
 
+    brightness = 0
+    fade_amount = 5
     # set the pin mode
-    my_board.set_pin_mode_digital_output(pin)
+    print('fade example')
+    my_board.set_pin_mode_pwm_output(pin)
 
-    # toggle the pin 4 times and exit
-    print(f'Pin {pin} ON')
-    my_board.digital_write(pin, 1)
-    time.sleep(1)
-    print('OFF')
-    my_board.digital_write(pin, 0)
-    time.sleep(1)
-
-    my_board.shutdown()
+    while True:
+        my_board.pwm_write(pin, brightness)
+        brightness = brightness + fade_amount
+        if (brightness <= 0 or brightness >= 255):
+            fade_amount = -fade_amount
+        time.sleep(.03)
 
 
 board = pymata_rh.PymataRh()
-try:
-    blink(board, DIGITAL_PIN)
-except KeyboardInterrupt:
-    board.shutdown()
-    sys.exit(0)
+fade(board, 2)
+
+# here we clean up after the program completes.
+board.shutdown()
+sys.exit(0)
