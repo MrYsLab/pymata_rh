@@ -19,25 +19,25 @@
 
 """
 
-from collections import deque
 import datetime
 import logging
-# noinspection PyPackageRequirements
-import serial
-# noinspection PyPackageRequirements
-from serial.tools import list_ports
-# noinspection PyPackageRequirementscd,PyPackageRequirements
-from serial.serialutil import SerialException
-import socket
 import sys
 import threading
 import time
+from collections import deque
 
-from pymata_rh.pin_data import PinData
-from pymata_rh.private_constants import PrivateConstants
-from pymata_rh.mpu_9250 import MPU9250
+# noinspection PyPackageRequirements
+import serial
+# noinspection PyPackageRequirementscd,PyPackageRequirements
+from serial.serialutil import SerialException
+# noinspection PyPackageRequirements
+from serial.tools import list_ports
+
 import pymata_rh.mpu_9250_constants as mpu_constants
 from pymata_rh.ina_219 import INA219
+from pymata_rh.mpu_9250 import MPU9250
+from pymata_rh.pin_data import PinData
+from pymata_rh.private_constants import PrivateConstants
 
 
 # noinspection PyPep8
@@ -53,8 +53,7 @@ class PymataRh(threading.Thread):
     def __init__(self, com_port=None, baud_rate=115200,
                  arduino_instance_id=1, arduino_wait=4,
                  sleep_tune=0.000001,
-                 shutdown_on_exception=True, ip_address=None,
-                 ip_port=None):
+                 shutdown_on_exception=True):
         """
         If you are using the Firmata Express Arduino sketch,
         and have a single Arduino connected to your computer,
@@ -62,8 +61,7 @@ class PymataRh(threading.Thread):
 
         If you are using some other Firmata sketch, then
         you must specify both the com_port and baudrate for
-        as serial connection, or ip_address and ip_port if
-        using StandardFirmataWifi.
+        as serial connection.
 
         :param com_port: e.g. COM3 or /dev/ttyACM0.
 
@@ -81,13 +79,6 @@ class PymataRh(threading.Thread):
         :param shutdown_on_exception: call shutdown before raising
                                       a RunTimeError exception, or
                                       receiving a KeyboardInterrupt exception
-
-        :param ip_address: Used with StandardFirmataWifi to specify IP address of
-                           the WiFi device
-
-        :param ip_port: Used with StandardFirmataWifi to specify IP port of
-                           the WiFi device. Typically this is 3030
-
         """
         self.pin_validation_map = {  # servo pins
             2: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
@@ -131,16 +122,7 @@ class PymataRh(threading.Thread):
         self.the_reporter_thread = threading.Thread(target=self._reporter)
         self.the_reporter_thread.daemon = True
 
-        self.ip_address = ip_address
-        self.ip_port = ip_port
-
-        # if an ip address was specified, tcp/ip will be used instead of serial
-        # transfer.
-        # create a thread to continuously receive data
-        if self.ip_address:
-            self.the_data_receive_thread = threading.Thread(target=self._tcp_receiver)
-        else:
-            self.the_data_receive_thread = threading.Thread(target=self._serial_receiver)
+        self.the_data_receive_thread = threading.Thread(target=self._serial_receiver)
 
         self.the_data_receive_thread.daemon = True
 
@@ -259,9 +241,6 @@ class PymataRh(threading.Thread):
         # serial port in use
         self.serial_port = None
 
-        # handle to tcp/ip socket
-        self.sock = None
-
         # An i2c_map entry consists of a device i2c address as the key, and
         #  the value of the key consists of a dictionary containing 2 entries.
         #  The first entry. 'value' contains the last value reported, and
@@ -286,22 +265,20 @@ class PymataRh(threading.Thread):
 
         print(f"pymata4:  Version {PrivateConstants.PYMATA_EXPRESS_THREADED_VERSION}\n\n"
               f"Copyright (c) 2020 Alan Yorinks All Rights Reserved.\n")
-        # if this is not a tcp interface, find the serial port
-        if not self.ip_address:
-            if not self.com_port:
-                # user did not specify a com_port
-                try:
-                    self._find_arduino()
-                except KeyboardInterrupt:
-                    if self.shutdown_on_exception:
-                        self.shutdown()
-            else:
-                # com_port specified - set com_port and baud rate
-                try:
-                    self._manual_open()
-                except KeyboardInterrupt:
-                    if self.shutdown_on_exception:
-                        self.shutdown()
+        if not self.com_port:
+            # user did not specify a com_port
+            try:
+                self._find_arduino()
+            except KeyboardInterrupt:
+                if self.shutdown_on_exception:
+                    self.shutdown()
+        else:
+            # com_port specified - set com_port and baud rate
+            try:
+                self._manual_open()
+            except KeyboardInterrupt:
+                if self.shutdown_on_exception:
+                    self.shutdown()
 
             if self.serial_port:
                 print(f"Arduino compatible device found and connected to {self.serial_port.port}")
@@ -311,14 +288,6 @@ class PymataRh(threading.Thread):
                 if self.shutdown_on_exception:
                     self.shutdown()
                 raise RuntimeError('No Arduino Found or User Aborted Program')
-        # this is tcp/ip interface
-        else:
-            # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as self.sock:
-            #     s = self.sock.create_connection((self.ip_address, self.ip_port))
-            #     print(s)
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.connect((self.ip_address, self.ip_port))
-            print(f'Successfully connected to: {self.ip_address}:{self.ip_port}')
 
         self.the_reporter_thread.start()
         self.the_data_receive_thread.start()
@@ -1623,15 +1592,9 @@ class PymataRh(threading.Thread):
             for pin in range(len(self.digital_pins)):
                 self.disable_digital_reporting(pin)
             self.send_reset()
-            if self.ip_address:
-                try:
-                    self.sock.shutdown(socket.SHUT_RDWR)
-                    self.sock.close()
-                except Exception:
-                    pass
-            else:
-                self.serial_port.reset_input_buffer()
-                self.serial_port.close()
+
+            self.serial_port.reset_input_buffer()
+            self.serial_port.close()
 
         except (RuntimeError, SerialException, OSError):
             # ignore error on shutdown
@@ -1964,16 +1927,14 @@ class PymataRh(threading.Thread):
         """
         # send_message = ""
         send_message = bytes(command)
-        if not self.ip_address:
-            try:
-                result = self.serial_port.write(send_message)
-            except SerialException:
-                if self.shutdown_on_exception:
-                    self.shutdown()
-                raise RuntimeError('write fail in _send_command')
-            return result
-        else:
-            self.sock.sendall(send_message)
+
+        try:
+            result = self.serial_port.write(send_message)
+        except SerialException:
+            if self.shutdown_on_exception:
+                self.shutdown()
+            raise RuntimeError('write fail in _send_command')
+        return result
 
     def _sonar_data(self, data):
         """
@@ -2179,20 +2140,6 @@ class PymataRh(threading.Thread):
                     time.sleep(self.sleep_tune)
                     # continue
             except OSError:
-                pass
-
-    # noinspection PyBroadException
-    def _tcp_receiver(self):
-        """
-        Thread to continuously check for incoming data.
-        When a byte comes in, place it onto the deque.
-        """
-        self.run_event.wait()
-        while self._is_running() and not self.shutdown_flag:
-            try:
-                payload = self.sock.recv(1)
-                self.the_deque.append(ord(payload))
-            except Exception:
                 pass
 
     def _validate_pin_mode(self, pin, mode):
