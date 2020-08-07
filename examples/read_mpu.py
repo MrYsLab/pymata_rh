@@ -36,7 +36,8 @@ board.mpu_9250_read_data()
 
 while True:
     try:
-        time.sleep(1)
+        time.sleep(5)
+        print(f'polling: {board.mpu_9250_read_saved_data()}')
     except KeyboardInterrupt:
         board.shutdown()
         sys.exit(0)
