@@ -16,46 +16,36 @@
 """
 
 import sys
-import time
 
 from pymata_rh import pymata_rh
 
-"""
-This example will set a servo to 0, 90 and 180 degree
-positions.
-"""
+
+# This example manipulates a PWM pin and retrieves its pin
+# state after each manipulation
 
 
-def servo(my_board, pin):
+def retrieve_pin_state(my_board):
     """
-    Set a pin to servo mode and then adjust
-    its position.
+    Establish a pin as a PWM pin. Set its value
+    to 127 and get the pin state. Then set the pin's
+    value to zero and get the pin state again.
 
-    :param my_board: pymata_rh instance
-    :param pin: pin to be controlled
+    :param my_board: pymata_aio instance
+    :return: No values returned by results are printed to console
     """
-
-    # set the pin mode
-    my_board.set_pin_mode_servo(pin)
-
-    # set the servo to 0 degrees
-    my_board.servo_write(pin, 0)
-
-    time.sleep(1)
-    # set the servo to 90 degrees
-    my_board.servo_write(pin, 90)
-
-
-    time.sleep(1)
-    # set the servo to 180 degrees
-    my_board.servo_write(pin, 180)
-    time.sleep(1)
+    my_board.set_pin_mode_pwm_output(6)
+    my_board.pwm_write(6, 127)
+    pin_state = my_board.get_pin_state(6)
+    print(f'You should see [6, 3, 127] and have received: {pin_state}')
+    my_board.pwm_write(6, 0)
+    pin_state = my_board.get_pin_state(6)
+    print(f'You should see [6, 3, 0]   and have received: {pin_state}')
 
 
 board = pymata_rh.PymataRh()
-
 try:
-    servo(board, 14)
+    retrieve_pin_state(board)
+    board.shutdown()
 except KeyboardInterrupt:
     board.shutdown()
     sys.exit(0)

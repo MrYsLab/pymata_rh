@@ -25,7 +25,7 @@ and toggle the pin. Do this 4 times.
 """
 
 # some globals
-DIGITAL_PIN = 3  # arduino pin number
+DIGITAL_PIN = 2  # arduino pin number
 
 
 def blink(my_board, pin):
@@ -40,12 +40,13 @@ def blink(my_board, pin):
     my_board.set_pin_mode_digital_output(pin)
 
     # toggle the pin 4 times and exit
-    print(f'Pin {pin} ON')
-    my_board.digital_write(pin, 1)
-    time.sleep(1)
-    print('OFF')
-    my_board.digital_write(pin, 0)
-    time.sleep(1)
+    for toggle in range(0, 4):
+        print(f'Pin {pin} ON')
+        my_board.digital_write(pin, 1)
+        time.sleep(1)
+        print('OFF')
+        my_board.digital_write(pin, 0)
+        time.sleep(1)
 
     my_board.shutdown()
 

@@ -16,46 +16,28 @@
 """
 
 import sys
-import time
 
 from pymata_rh import pymata_rh
 
 """
-This example will set a servo to 0, 90 and 180 degree
-positions.
+This example retrieves the Firmata sketch protocol number.
 """
 
 
-def servo(my_board, pin):
+def retrieve_protocol_version(my_board):
     """
-    Set a pin to servo mode and then adjust
-    its position.
+    Retrieve and print the protocol version
 
-    :param my_board: pymata_rh instance
-    :param pin: pin to be controlled
+    :param my_board: pymata_rh
     """
 
-    # set the pin mode
-    my_board.set_pin_mode_servo(pin)
-
-    # set the servo to 0 degrees
-    my_board.servo_write(pin, 0)
-
-    time.sleep(1)
-    # set the servo to 90 degrees
-    my_board.servo_write(pin, 90)
-
-
-    time.sleep(1)
-    # set the servo to 180 degrees
-    my_board.servo_write(pin, 180)
-    time.sleep(1)
+    print(f'Protocol Version: {my_board.get_protocol_version()}')
 
 
 board = pymata_rh.PymataRh()
-
 try:
-    servo(board, 14)
+    retrieve_protocol_version(board)
+    board.shutdown()
 except KeyboardInterrupt:
     board.shutdown()
     sys.exit(0)

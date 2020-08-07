@@ -15,18 +15,19 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import time
+
 import sys
+import time
+
 from pymata_rh import pymata_rh
 
 """
-Setup a pin for digital input and monitor its changes
-Both polling and callback are being used in this example.
+Setup a digital pin for input pullup and monitor its changes.
 """
 
-# Setup a pin for analog input and monitor its changes
+# some globals
 DIGITAL_PIN = 2  # arduino pin number
-POLL_TIME = 5  # number of seconds between polls
+KILL_TIME = 5  # sleep time to keep forever loop open
 
 # Callback data indices
 # Callback data indices
@@ -35,6 +36,8 @@ CB_PIN = 1
 CB_VALUE = 2
 CB_TIME = 3
 
+
+# Setup a pin for digital pin input and monitor its changes
 
 def the_callback(data):
     """
@@ -48,7 +51,7 @@ def the_callback(data):
     print(f'Pin: {data[CB_PIN]} Value: {data[CB_VALUE]} Time Stamp: {date}')
 
 
-def digital_in(my_board, pin):
+def digital_in_pullup(my_board, pin):
     """
      This function establishes the pin as a
      digital input. Any changes on this pin will
@@ -58,29 +61,22 @@ def digital_in(my_board, pin):
      :param pin: Arduino pin number
      """
 
-    # set the pin mode
-    my_board.set_pin_mode_digital_input(pin, callback=the_callback)
-    # my_board.set_pin_mode_digital_input_pullup(pin, callback=the_callback)
-    # my_board.set_pin_mode_digital_input(pin, callback=the_callback)
+    # start monitoring the pin by setting its mode
+    my_board.set_pin_mode_digital_input_pullup(pin, callback=the_callback)
 
-
+    # get pin changes forever
     while True:
         try:
-            # Do a read of the last value reported every 5 seconds and print it
-            # digital_read returns A tuple of last value change and the time that it occurred
-            value, time_stamp = my_board.digital_read(pin)
-            date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time_stamp))
-            # value
-            print(f'Polling - last value: {value} received on {date} ')
-            time.sleep(POLL_TIME)
+            time.sleep(KILL_TIME)
         except KeyboardInterrupt:
             board.shutdown()
             sys.exit(0)
 
-board = pymata_rh.PymataRh()
 
+board = pymata_rh.PymataRh()
 try:
-    digital_in(board, DIGITAL_PIN)
+    digital_in_pullup(board, DIGITAL_PIN)
+    board.shutdown()
 except KeyboardInterrupt:
     board.shutdown()
     sys.exit(0)

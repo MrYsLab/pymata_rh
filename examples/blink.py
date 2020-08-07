@@ -11,7 +11,7 @@ and toggle the pin forever.
 # some globals
 DIGITAL_PIN = 13  # the board LED
 
-# Create a pymata4 instance.
+# Create a pymata_rh instance.
 board = pymata_rh.PymataRh()
 
 # Set the DIGITAL_PIN as an output pin
