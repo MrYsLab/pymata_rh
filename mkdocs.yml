@@ -1,0 +1,28 @@
+site_name: pymata_rh
+nav:
+    - What Is pymata_rh?: index.md
+    - The pymata_rh API:
+        - Understanding Input Data Collection: polling.md
+        - The __init__ Method: init.md
+        - Setting Pin Modes: pin_modes.md
+        - Enabling/Disabling Analog And Digital Reporting: enable_disable.md
+        - Reading Input Data Via Polling: pin_changes.md
+        - Writing Values To Pins And Selected Devices:  device_writes.md
+        - I2C Reads And Writes: i2c.md
+        - Configuring And Reading The MPU9250 9DOF Device: mpu9250.md
+        - Configruing And Reading The INA219 Current, Shunt, And Power Monitor: ina219.md
+        - Report Requests: report_requests.md
+        - Management Requests: management.md
+        - Exceptions: exceptions.md
+    - System and Installation Requirements:
+        - Verifying Python 3 Version: python_3_verify.md
+        - Python 3 Installation: python_install.md
+        - Installing Pymata_Rh: install_pymata4.md
+        - Installing FirmataExpress: firmata_express.md
+        - Upgrading pymata_rh To The Latest Version: upgrade.md
+    - About: about.md
+    - License: license.md
+# theme: windmill
+
+theme:
+  name: 'material'
