@@ -263,7 +263,7 @@ class PymataRh(threading.Thread):
         # flag to indicate we are in shutdown mode
         self.shutdown_flag = False
 
-        print(f"pymata4:  Version {PrivateConstants.PYMATA_EXPRESS_THREADED_VERSION}\n\n"
+        print(f"pymata_rh:  Version {PrivateConstants.PYMATA_RH_VERSION}\n\n"
               f"Copyright (c) 2020 Alan Yorinks All Rights Reserved.\n")
         if not self.com_port:
             # user did not specify a com_port
@@ -686,7 +686,7 @@ class PymataRh(threading.Thread):
 
         :returns: PyMata Express version number.
         """
-        return PrivateConstants.PYMATA_EXPRESS_THREADED_VERSION
+        return PrivateConstants.PYMATA_RH_VERSION
 
     def i2c_read_saved_data(self, address):
         """

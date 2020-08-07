@@ -436,9 +436,9 @@ class MPU9250:
 
         """
         try:
-            print("Calibrating", hex(self.address_mpu), "- AK8963")
+            print("Calibrating ", hex(self.address_mpu), "- AK8963, please wait")
             self.calibrate_ak8963()
-            print("Calibrating", hex(self.address_mpu), "- MPU6500")
+            print("Calibrating", hex(self.address_mpu), "- MPU6500, please wait")
             self.calibrate_mpu_6500()
         except OSError:
             if retry > 1:
@@ -501,7 +501,9 @@ class MPU9250:
         gyro_bias = [0, 0, 0]
 
         while index < packet_count:
+            print(f"\rIterations to go:    ", end='')
             print(f"\rIterations to go: {packet_count - index}", end='')
+
             # read data for averaging
             data = self.read_mpu(FIFO_R_W, 12, 0.4)
 
@@ -575,6 +577,7 @@ class MPU9250:
         index = 0
 
         while index < sample_count:
+            print(f"\rIterations to go:    ", end='')
             print(f"\rIterations to go: {sample_count - index}", end='')
             index += 1
             # data = None
@@ -693,7 +696,6 @@ class MPU9250:
         if sleep > 0:
             time.sleep(sleep)
         data = self.board.i2c_read_saved_data(self.address_ak)
-        # print(f'ak data = {data}')
 
         return data
 
@@ -729,5 +731,4 @@ class MPU9250:
             time.sleep(sleep)
             # time.sleep(1)
         data = self.board.i2c_read_saved_data(self.address_mpu)
-        # print(f'mpu data = {data}')
         return data
