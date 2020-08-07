@@ -5,7 +5,7 @@ with open('pypi_desc.md') as f:
 
 setup(
     name='pymata_rh',
-    version='0.1',
+    version='1.0',
     packages=[
         'pymata_rh',
     ],
