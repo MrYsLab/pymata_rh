@@ -53,7 +53,7 @@ Communication between the Python script and the Robo HAT MM1 is accomplished ove
 ### A [User's Guide is available,](https://mryslab.github.io/pymata_rh/) containing an annotated API as well as links to working examples.
 
 
-##Major features
+## Major features
 
 * **Fully documented <a href="https://htmlpreview.github.com/?https://github.com/MrYsLab/pymata4/blob/master/html/pymata4/index.html" target="_blank">intuitive API</a>**
 
