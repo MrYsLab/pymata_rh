@@ -1,0 +1,997 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-5.1.6">
+    
+    
+      
+        <title>Configruing And Reading The INA219 Current, Shunt, And Power Monitor - pymata_rh</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.4b9ffd7b.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#interacting-with-the-ina219" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href=".." title="pymata_rh" class="md-header-nav__button md-logo" aria-label="pymata_rh">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            pymata_rh
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Configruing And Reading The INA219 Current, Shunt, And Power Monitor
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pymata_rh" class="md-nav__button md-logo" aria-label="pymata_rh">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    pymata_rh
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="What Is pymata_rh?" class="md-nav__link">
+      What Is pymata_rh?
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      The pymata_rh API
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="The pymata_rh API" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        The pymata_rh API
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../polling/" title="Understanding Input Data Collection" class="md-nav__link">
+      Understanding Input Data Collection
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../init/" title="The __init__ Method" class="md-nav__link">
+      The __init__ Method
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pin_modes/" title="Setting Pin Modes" class="md-nav__link">
+      Setting Pin Modes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../enable_disable/" title="Enabling/Disabling Analog And Digital Reporting" class="md-nav__link">
+      Enabling/Disabling Analog And Digital Reporting
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pin_changes/" title="Reading Input Data Via Polling" class="md-nav__link">
+      Reading Input Data Via Polling
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../device_writes/" title="Writing Values To Pins And Selected Devices" class="md-nav__link">
+      Writing Values To Pins And Selected Devices
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../i2c/" title="I2C Reads And Writes" class="md-nav__link">
+      I2C Reads And Writes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mpu9250/" title="Configuring And Reading The MPU9250 9DOF Device" class="md-nav__link">
+      Configuring And Reading The MPU9250 9DOF Device
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Configruing And Reading The INA219 Current, Shunt, And Power Monitor
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Configruing And Reading The INA219 Current, Shunt, And Power Monitor" class="md-nav__link md-nav__link--active">
+      Configruing And Reading The INA219 Current, Shunt, And Power Monitor
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ina_initialize" class="md-nav__link">
+    ina_initialize
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_bus_voltage" class="md-nav__link">
+    ina_read_bus_voltage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_bus_voltage_last" class="md-nav__link">
+    ina_read_bus_voltage_last
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_bus_current" class="md-nav__link">
+    ina_read_bus_current
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_bus_current_last" class="md-nav__link">
+    ina_read_bus_current_last
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_supply_voltage_last" class="md-nav__link">
+    ina_read_supply_voltage_last
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_shunt_voltage" class="md-nav__link">
+    ina_read_shunt_voltage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_shunt_voltage_last" class="md-nav__link">
+    ina_read_shunt_voltage_last
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_power" class="md-nav__link">
+    ina_read_power
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_sleep" class="md-nav__link">
+    ina_sleep
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_wake" class="md-nav__link">
+    ina_wake
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../report_requests/" title="Report Requests" class="md-nav__link">
+      Report Requests
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../management/" title="Management Requests" class="md-nav__link">
+      Management Requests
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../exceptions/" title="Exceptions" class="md-nav__link">
+      Exceptions
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      System and Installation Requirements
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="System and Installation Requirements" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        System and Installation Requirements
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../python_3_verify/" title="Verifying Python 3 Version" class="md-nav__link">
+      Verifying Python 3 Version
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../python_install/" title="Python 3 Installation" class="md-nav__link">
+      Python 3 Installation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../install_pymata_rh/" title="Installing Pymata_Rh" class="md-nav__link">
+      Installing Pymata_Rh
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../firmata_express/" title="Installing FirmataExpress" class="md-nav__link">
+      Installing FirmataExpress
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../upgrade/" title="Upgrading Pymata_rh To The Latest Version" class="md-nav__link">
+      Upgrading Pymata_rh To The Latest Version
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../about/" title="About" class="md-nav__link">
+      About
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ina_initialize" class="md-nav__link">
+    ina_initialize
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_bus_voltage" class="md-nav__link">
+    ina_read_bus_voltage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_bus_voltage_last" class="md-nav__link">
+    ina_read_bus_voltage_last
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_bus_current" class="md-nav__link">
+    ina_read_bus_current
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_bus_current_last" class="md-nav__link">
+    ina_read_bus_current_last
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_supply_voltage_last" class="md-nav__link">
+    ina_read_supply_voltage_last
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_shunt_voltage" class="md-nav__link">
+    ina_read_shunt_voltage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_shunt_voltage_last" class="md-nav__link">
+    ina_read_shunt_voltage_last
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_read_power" class="md-nav__link">
+    ina_read_power
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_sleep" class="md-nav__link">
+    ina_sleep
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ina_wake" class="md-nav__link">
+    ina_wake
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="interacting-with-the-ina219">Interacting With The INA219</h1>
+<p>Pymata_rh provides a separate API method call to retrieve each of the measurements that an
+INA219 can perform.</p>
+<p>The following API methods to allow you to control and monitor the INA219:</p>
+<ul>
+<li>ina_initialize</li>
+<li>ina_read_bus_voltage</li>
+<li>ina_read_bus_voltage_last</li>
+<li>ina_read_bus_current</li>
+<li>ina_read_bus_current_last</li>
+<li>ina_read_power</li>
+<li>ina_read_power_last</li>
+<li>ina_read_shunt_voltage</li>
+<li>ina_read_shunt_voltage_last</li>
+<li>ina_read_supply_voltage</li>
+<li>ina_read_supply_voltage_last</li>
+</ul>
+<p>Each of the methods that end in <strong>_last</strong> retrieves the last data values read from the device.
+These methods do not do a physical read of the INA219.</p>
+<p>All the other methods that do not end with <strong>_last</strong> perform a physical read of the device.</p>
+<h2 id="ina_initialize">ina_initialize</h2>
+<pre><code class="python">def ina_initialize(self, address=64, shunt_ohms=0.2, 
+                   max_expected_amps=0.2, callback=None)
+
+    This method instantiates an INA219 object.
+
+    :param address: The i2c address of the device
+
+    :param shunt_ohms: The shunt resistance in ohms
+
+    :param max_expected_amps: The maximum expected current in amps
+
+    :param callback: Callback method that will INA219 callbacks
+
+    Note: There is a single callback shared by all INA methods.
+
+</code></pre>
+
+<p>This method <strong>must</strong> be called before calling any of the other INA219 methods. Typically, 
+you can accept all of the default
+values. If you wish to have your application automatically notified of any INA219 reads, you must specify a callback
+function. </p>
+<p>Using a callback is optional but highly recommended. A callback function ensures that your application receives
+the latest INA219 data automatically without any polling interaction. If you do not specify a callback method, you 
+may still poll for
+the latest reported values using the INA219 methods that end in <em>_last</em></p>
+<p>The data frame returned as a result of any of the reads is described in the specific
+read methods.</p>
+<p>For a discussion on callbacks and polling, please refer 
+<a href="../polling/">to this section</a> of the document.</p>
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<h2 id="ina_read_bus_voltage">ina_read_bus_voltage</h2>
+<pre><code class="python">def ina_read_bus_voltage(self):
+        &quot;&quot;&quot;
+        This method well execute a read of the bus voltage.
+        If a callback was specified in ina_initialize, then
+        a callback frame is specified as follows:
+
+        [pin_type=0x11, device_i2c_address, read_type=0 (bus voltage), 
+         voltage, units='V', timestamp]
+
+        The data is also saved to be retrieved by ina_read_supply_voltage_last()
+
+        :return: callback is called and storage updated with latest value
+        &quot;&quot;&quot;
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<h2 id="ina_read_bus_voltage_last">ina_read_bus_voltage_last</h2>
+<pre><code class="python">
+def ina_read_bus_voltage_last(self):
+    &quot;&quot;&quot;
+    Retrieve last bus voltage value read from the ina_219.
+
+    :return: list: [pin_type=0x11, device_i2c_address,
+                   read_type=0 (bus voltage), units='V', timestamp]
+    &quot;&quot;&quot;
+    return self.ina_last_value_bus_voltage
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<h2 id="ina_read_bus_current">ina_read_bus_current</h2>
+<pre><code class="python">def ina_read_bus_current(self):
+        &quot;&quot;&quot;
+        This method well execute a read of the bus current.
+        If a callback was specified in ina_initialize, then
+        a callback frame is specified as follows:
+
+        [pin_type=0x11, device_i2c_address, read_type=1 (bus current), 
+         current, units='mA', timestamp]
+
+        The data is also saved to be retrieved by ina_read_bus_current_last()
+
+        :return: callback is called and storage updated with latest value
+        &quot;&quot;&quot;
+
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<h2 id="ina_read_bus_current_last">ina_read_bus_current_last</h2>
+<pre><code class="python"> def ina_read_bus_current_last(self):
+        &quot;&quot;&quot;
+        Retrieve last supply voltage value read from the ina_219.
+
+        :return: list:
+        [pin_type=0x11, device_i2c_address, read_type=1 (bus voltage),
+         voltage, units='mA', timestamp]
+        &quot;&quot;&quot;
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<pre><code class="python">def ina_read_supply_voltage(self):
+        &quot;&quot;&quot;
+        This method well execute a read of the supply voltage.
+        If a callback was specified in ina_initialize, then
+        a callback frame is specified as follows:
+
+        [pin_type=0x11, device_i2c_address, read_type=2 (supply voltage),
+         supply voltage, unit='V',timestamp]
+
+        The data is also saved to be retrieved by ina_read_supply_voltage_last()
+
+        :return: callback is called and storage updated with latest value
+        &quot;&quot;&quot;
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<h2 id="ina_read_supply_voltage_last">ina_read_supply_voltage_last</h2>
+<pre><code class="python">
+def ina_read_supply_voltage_last(self):
+        &quot;&quot;&quot;
+        This method retrieves the last supply voltage read.
+        :return: list:
+
+        [pin_type=0x11, device_i2c_address, read_type=2 (supply voltage),
+         voltage, units='V', timestamp]
+        &quot;&quot;&quot;
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<h2 id="ina_read_shunt_voltage">ina_read_shunt_voltage</h2>
+<pre><code class="python">
+def ina_read_shunt_voltage(self):
+        &quot;&quot;&quot;
+        This method well execute a read of the shunt voltage.
+        If a callback was specified in ina_initialize, then
+        a callback frame is specified as follows:
+
+        [pin_type=0x11, device_i2c_address, read_type=3 (supply voltage), 
+         shunt voltage, units='mV', timestamp]
+
+        The data is also saved to be retrieved by ina_read_shunt_voltage_last()
+
+        :return: callback is called and storage updated with latest value
+        &quot;&quot;&quot;
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<h2 id="ina_read_shunt_voltage_last">ina_read_shunt_voltage_last</h2>
+<pre><code class="python">
+def ina_read_shunt_voltage_last(self):
+        &quot;&quot;&quot;
+        This method well execute a read of the shunt voltage.
+        If a callback was specified in ina_initialize, then
+        a callback frame is specified as follows:
+
+        :return: list:
+        [pin_type=0x11, device_i2c_address, read_type=3 (shunt voltage), shunt voltage, units='mV', timestamp]
+        &quot;&quot;&quot;
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<h2 id="ina_read_power">ina_read_power</h2>
+<pre><code class="python">def ina_read_power(self):
+        &quot;&quot;&quot;
+        This method well execute a read of the power.
+        If a callback was specified in ina_initialize, then
+        a callback frame is specified as follows:
+
+        [pin_type=0x11, device_i2c_address, read_type=4 (power), 
+         power, units='mW', timestamp]
+
+        The data is also saved to be retrieved by ina_read_power_last()
+
+        :return: callback is called and storage updated with latest value
+        &quot;&quot;&quot;
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<pre><code class="python">
+
+## ina_read_power_last
+def ina_read_power_last(self):
+        &quot;&quot;&quot;
+        This method retrieves the last read power value.
+        :return: list:
+
+                [pin_type=0x11, device_i2c_address, read_type=4 (power), 
+                 power, units='mW', timestamp]
+        &quot;&quot;&quot;
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<h2 id="ina_sleep">ina_sleep</h2>
+<pre><code class="python">def ina_sleep(self):
+        &quot;&quot;&quot;
+        Place the ina219 into sleep mode.
+        &quot;&quot;&quot;
+
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<h2 id="ina_wake">ina_wake</h2>
+<pre><code class="python">def ina_wake(self):
+        &quot;&quot;&quot;
+        Wake the ina219 from sleep model
+        &quot;&quot;&quot;
+
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/ina_test.py">ina_test.py</a></p>
+<p><br>
+<br></p>
+<p>Copyright (C) 2020 Alan Yorinks. All Rights Reserved.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../mpu9250/" title="Configuring And Reading The MPU9250 9DOF Device" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Configuring And Reading The MPU9250 9DOF Device
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../report_requests/" title="Report Requests" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Report Requests
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.a0c4167b.min.js"></script>
+      <script src="../assets/javascripts/bundle.fb26dd1d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: [],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.37585f48.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

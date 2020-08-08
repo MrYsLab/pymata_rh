@@ -1,0 +1,879 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-5.1.6">
+    
+    
+      
+        <title>Configuring And Reading The MPU9250 9DOF Device - pymata_rh</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.4b9ffd7b.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#interacting-with-the-mpu9250" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href=".." title="pymata_rh" class="md-header-nav__button md-logo" aria-label="pymata_rh">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            pymata_rh
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Configuring And Reading The MPU9250 9DOF Device
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pymata_rh" class="md-nav__button md-logo" aria-label="pymata_rh">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    pymata_rh
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="What Is pymata_rh?" class="md-nav__link">
+      What Is pymata_rh?
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      The pymata_rh API
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="The pymata_rh API" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        The pymata_rh API
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../polling/" title="Understanding Input Data Collection" class="md-nav__link">
+      Understanding Input Data Collection
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../init/" title="The __init__ Method" class="md-nav__link">
+      The __init__ Method
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pin_modes/" title="Setting Pin Modes" class="md-nav__link">
+      Setting Pin Modes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../enable_disable/" title="Enabling/Disabling Analog And Digital Reporting" class="md-nav__link">
+      Enabling/Disabling Analog And Digital Reporting
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pin_changes/" title="Reading Input Data Via Polling" class="md-nav__link">
+      Reading Input Data Via Polling
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../device_writes/" title="Writing Values To Pins And Selected Devices" class="md-nav__link">
+      Writing Values To Pins And Selected Devices
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../i2c/" title="I2C Reads And Writes" class="md-nav__link">
+      I2C Reads And Writes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Configuring And Reading The MPU9250 9DOF Device
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Configuring And Reading The MPU9250 9DOF Device" class="md-nav__link md-nav__link--active">
+      Configuring And Reading The MPU9250 9DOF Device
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mpu_9250_initialize" class="md-nav__link">
+    mpu_9250_initialize
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mpu_9250_read_data" class="md-nav__link">
+    mpu_9250_read_data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mpu_9250_read_saved_data" class="md-nav__link">
+    mpu_9250_read_saved_data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mpu_9250_calibrate" class="md-nav__link">
+    mpu_9250_calibrate
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ina219/" title="Configruing And Reading The INA219 Current, Shunt, And Power Monitor" class="md-nav__link">
+      Configruing And Reading The INA219 Current, Shunt, And Power Monitor
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../report_requests/" title="Report Requests" class="md-nav__link">
+      Report Requests
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../management/" title="Management Requests" class="md-nav__link">
+      Management Requests
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../exceptions/" title="Exceptions" class="md-nav__link">
+      Exceptions
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      System and Installation Requirements
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="System and Installation Requirements" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        System and Installation Requirements
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../python_3_verify/" title="Verifying Python 3 Version" class="md-nav__link">
+      Verifying Python 3 Version
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../python_install/" title="Python 3 Installation" class="md-nav__link">
+      Python 3 Installation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../install_pymata_rh/" title="Installing Pymata_Rh" class="md-nav__link">
+      Installing Pymata_Rh
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../firmata_express/" title="Installing FirmataExpress" class="md-nav__link">
+      Installing FirmataExpress
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../upgrade/" title="Upgrading Pymata_rh To The Latest Version" class="md-nav__link">
+      Upgrading Pymata_rh To The Latest Version
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../about/" title="About" class="md-nav__link">
+      About
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mpu_9250_initialize" class="md-nav__link">
+    mpu_9250_initialize
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mpu_9250_read_data" class="md-nav__link">
+    mpu_9250_read_data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mpu_9250_read_saved_data" class="md-nav__link">
+    mpu_9250_read_saved_data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mpu_9250_calibrate" class="md-nav__link">
+    mpu_9250_calibrate
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="interacting-with-the-mpu9250">Interacting With The MPU9250</h1>
+<p>Pymata_rh provides the following API methods to allow you to 
+control and monitor the MPU9250:</p>
+<ul>
+<li>mpu_9250_initialize</li>
+<li>mpu_9250_read_data</li>
+<li>mpu_9250_read_saved_data</li>
+<li>mpu_9250_calibrate</li>
+</ul>
+<p>Let's look at each method in detail.</p>
+<h2 id="mpu_9250_initialize">mpu_9250_initialize</h2>
+<pre><code class="python"> def mpu_9250_initialize(self, address_ak=12, address_mpu=104, g_fs=1, a_fs=0, 
+                         m_fs=1, mode=2, a_bias=(0, 0, 0), g_bias=(0, 0, 0), 
+                         m_bias=(0, 0, 0), mag_scale=(1, 1, 1), callback=None)
+
+    This method instantiates an mpu_9250 object. 
+    It also creates the thread to manage the mpu_9250 data retrieval.
+
+    :param address_ak: AK8963 I2C address (default:AK8963_ADDRESS[0x0C]).
+
+    :param address_mpu: MPU-9250 I2C address (default:MPU9050_ADDRESS_68[0x68]).
+
+    :param g_fs: Gyroscope full scale select (default:GFS_2000[2000dps]).
+
+    :param a_fs: Accelerometer full scale select (default:AFS_16G[16g]).
+
+    :param m_fs: Magnetometer scale select (default:AK8963_BIT_16[16bit])
+
+    :param mode: Magnetometer mode select (default:AK8963_MODE_C8HZ)
+
+    :param a_bias: Accelerometer Bias
+
+    :param g_bias: Gyroscope Bias
+
+    :param m_bias: Magnetometer Hard Iron Distortion
+
+    :param mag_scale: Magnetometer Soft Iron Distortion
+
+    :param callback: Callback method that will receive mpu data frames
+</code></pre>
+
+<p>This method <strong>must</strong> be called before calling the mpu_9250_read_data method. Typically, you can accept all of the default
+values. If you wish to have your application notified of all MPU9250 reads, you must specify a callback
+function to handle the callback data. </p>
+<p>Using a callback is optional but highly recommended. A callback function ensures that your application receives
+the latest MPU9250 data automatically without any polling interaction. If you do not specify a callback method, you 
+may still poll for
+the latest reported values using the <em>mpu_9250_read_saved_data</em> method. </p>
+<p>For a discussion on callbacks and polling, please refer 
+<a href="../polling/">to this section</a> of the document.</p>
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/read_mpu.py">read_mpu.py</a></p>
+<h2 id="mpu_9250_read_data">mpu_9250_read_data</h2>
+<pre><code class="python"> def mpu_9250_read_data(self, mode=self.mpu_constants.MPU9250_READ_CONTINUOUS_ON, 
+                        continuous_delay=0.3)
+
+    Read and report mpu_9250 data for accelerometer, gyroscope, 
+                    magnetometer, and device temperature.
+
+    :param mode: MPU9250_READ_CONTINUOUS_ON  
+                 Data is read continuously.
+                 Or
+                 MPU9250_READ_CONTINUOUS_OFF
+                 Data read is halted.
+
+    :param continuous_delay: Minimum delay between reads
+
+    :return: For MPU9250_READ_CONTINUOUS_ON. 
+             If a callback was specified in mpu_9250_initialize(), 
+             then data returned is returned via callback.
+
+         Callback data is a list with format:
+         index[0] = pin type - for mpu9250 the value is 16
+         index[1] = mpu address
+         index[2] = accelerometer x axis
+         index[3] = accelerometer y axis
+         index[4] = accelerometer z axis
+         index[5] = gyroscope x axis
+         index[6] = gyroscope y axis
+         index[7] = gyroscope z axis
+         index[8] = magnetometer x axis
+         index[9] = magnetometer y axis
+         index[10] = magnetometer z axis
+         index[11] = temperature
+         index[12] = timestamp
+
+         If no callback was specified, then data is stored and can be
+         retrieved using mpu_9250_read_saved_data().
+
+</code></pre>
+
+<p>This method either starts a continuous read of data from the MPU9250 device 
+ if the mode is specified self.mpu_constants.MPU9250_READ_CONTINUOUS_ON or
+ halts a continuous read if the mode is specified as 
+ self.mpu_constants.MPU9250_READ_CONTINUOUS_OFF</p>
+<p>The units of data for each item returned is as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Sensor</th>
+<th align="center">Unit of Measurement</th>
+<th align="center">Axis Reported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accelerometer</td>
+<td align="center">g (1g = 9.80665 m/s²)</td>
+<td align="center">x, y and z axes</td>
+</tr>
+<tr>
+<td>Gyroscope</td>
+<td align="center">degrees per second (°/s)</td>
+<td align="center">x, y and z axes</td>
+</tr>
+<tr>
+<td>Magnetometer</td>
+<td align="center">microtesla (μT)</td>
+<td align="center">x, y and z axes</td>
+</tr>
+<tr>
+<td>Temperature</td>
+<td align="center">celsius degrees (°C)</td>
+<td align="center">Not Appplicaable</td>
+</tr>
+</tbody>
+</table>
+<p>The data for all of the sensors of the MPU9250 are queried at the same time so
+that you may track things as accurately as possible.</p>
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/read_mpu.py">read_mpu.py</a></p>
+<h2 id="mpu_9250_read_saved_data">mpu_9250_read_saved_data</h2>
+<pre><code class="python"> def mpu_9250_read_saved_data(self)
+
+    Retrieve and return the last data set read from the mpu_9250
+
+    :return: The last read data frame in list form. An empty list,
+             or a value of None may be returned as well.
+             The format for the data is the same as that of
+             the callback data.
+</code></pre>
+
+<p>You may poll the MPU9250 for the latest data by calling this method.</p>
+<p>You may call mpu_9250_read_saved_data, whether you specified a callback or not.</p>
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/read_mpu.py">read_mpu.py</a></p>
+<h2 id="mpu_9250_calibrate">mpu_9250_calibrate</h2>
+<pre><code class="python"> def mpu_9250_calibrate(self, log=True)
+
+    This method will calibrate the device. This is a lengthy 
+    process and may take about a minute to complete.
+
+    This method will: 1. Test if the mpu_9250 was initialized and 
+                         if not, it will initialize with the default values. 
+                      2. Print the current device settings.
+                      3. Run the calibrations for both the calibrate_ak8963 and MPU6050. 
+                      4. Configure the device with the new settings. 
+                      5. Print the new device settings.
+                      6. If the log parameter is True, the calibrations will be saved to 
+                         a log file.
+
+    :param: logging - If set to True calibration data is logged to a file named mpu_calibration.log
+
+    :return: If an error is encountered a RunTimeError exception is raised.
+</code></pre>
+
+<p>You need not initialize the MPU9250 after calling mpu_9250_calibrate.</p>
+<p>Here is a sample of console output after a calibration completes. If log is 
+enabled, each run is appended to the file so that you may have a running
+history of calibrations.</p>
+<pre><code class="python">
+
+Configuration data being logged to mpu_calibration.log
+Initializing mpu9250
+Settings Before Calibration:
+
+MPU Address: 0x68
+AK Address: 0xc
+Accel Resolution: 6.103515625e-05
+Gyro Resolution: 0.0152587890625
+Mag Resolution: 0.14993894993894993
+Accel Bias: (0, 0, 0)
+Gyro Bias: (0, 0, 0)
+Mag Bias: (0, 0, 0)
+Mag Calibration: (1.16796875, 1.171875, 1.125)
+Mag Scale: (1, 1, 1)
+
+Calibrating ...
+
+Calibrating 0x68 - AK8963
+Iterations to go: 1
+ak8963 complete.
+Calibrating 0x68 - MPU6500
+Iterations to go: 1
+mpu_6500 complete.
+Configuring with calibrated values...
+
+
+Settings After Calibration:
+
+MPU Address: 0x68
+AK Address: 0xc
+Accel Resolution: 6.103515625e-05
+Gyro Resolution: 0.0152587890625
+Mag Resolution: 0.14993894993894993
+Accel Bias: (-0.020819769965277776, 0.023098415798611112, 0.00850423177083326)
+Gyro Bias: (-2.617306179470486, 2.636379665798611, -0.698301527235243)
+Mag Bias: (45.00687003968254, 42.78531364468865, 27.326373626373623)
+Mag Calibration: (1.16796875, 1.171875, 1.125)
+Mag Scale: (0.9848484848484849, 1.0317460317460319, 0.9848484848484849)
+</code></pre>
+
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/MrYsLab/pymata_rh/blob/master/examples/calibrate_mpu9250.py">calibrate_mpu9250.py</a></p>
+<p><br>
+<br></p>
+<p>Copyright (C) 2020 Alan Yorinks. All Rights Reserved.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../i2c/" title="I2C Reads And Writes" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                I2C Reads And Writes
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../ina219/" title="Configruing And Reading The INA219 Current, Shunt, And Power Monitor" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Configruing And Reading The INA219 Current, Shunt, And Power Monitor
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.a0c4167b.min.js"></script>
+      <script src="../assets/javascripts/bundle.fb26dd1d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: [],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.37585f48.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

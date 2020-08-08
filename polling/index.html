@@ -1,0 +1,970 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-5.1.6">
+    
+    
+      
+        <title>Understanding Input Data Collection - pymata_rh</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.4b9ffd7b.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#understanding-input-data-collection-and-reporting" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href=".." title="pymata_rh" class="md-header-nav__button md-logo" aria-label="pymata_rh">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            pymata_rh
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Understanding Input Data Collection
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pymata_rh" class="md-nav__button md-logo" aria-label="pymata_rh">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    pymata_rh
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="What Is pymata_rh?" class="md-nav__link">
+      What Is pymata_rh?
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      The pymata_rh API
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="The pymata_rh API" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        The pymata_rh API
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Understanding Input Data Collection
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Understanding Input Data Collection" class="md-nav__link md-nav__link--active">
+      Understanding Input Data Collection
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#firmata-input-data-collection-and-reporting" class="md-nav__link">
+    Firmata Input Data Collection and Reporting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#firmata-polls-for-data-changes" class="md-nav__link">
+    Firmata Polls For Data Changes
+  </a>
+  
+    <nav class="md-nav" aria-label="Firmata Polls For Data Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#digital-input" class="md-nav__link">
+    Digital Input
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analog-input" class="md-nav__link">
+    Analog Input
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#i2c-input" class="md-nav__link">
+    I2C Input
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sonar-hc-sr04-input" class="md-nav__link">
+    Sonar (HC-SR04) Input
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dht-temperaturehumidity-sensor-input" class="md-nav__link">
+    DHT Temperature/Humidity Sensor Input
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pymatarh-input-data-processing" class="md-nav__link">
+    PymataRh Input Data Processing
+  </a>
+  
+    <nav class="md-nav" aria-label="PymataRh Input Data Processing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pymata_rh-polling-for-input-data-changes" class="md-nav__link">
+    Pymata_rh Polling For Input Data Changes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-callbacks-instead-of-polling" class="md-nav__link">
+    Using Callbacks Instead Of Polling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions-that-can-be-registered-for-callbacks" class="md-nav__link">
+    Functions That Can Be Registered For Callbacks
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#callback-function-scope" class="md-nav__link">
+    Callback Function Scope
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-callback-return-values" class="md-nav__link">
+    The Callback Return Values
+  </a>
+  
+    <nav class="md-nav" aria-label="The Callback Return Values">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pin-type-identifiers" class="md-nav__link">
+    Pin Type Identifiers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../init/" title="The __init__ Method" class="md-nav__link">
+      The __init__ Method
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pin_modes/" title="Setting Pin Modes" class="md-nav__link">
+      Setting Pin Modes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../enable_disable/" title="Enabling/Disabling Analog And Digital Reporting" class="md-nav__link">
+      Enabling/Disabling Analog And Digital Reporting
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pin_changes/" title="Reading Input Data Via Polling" class="md-nav__link">
+      Reading Input Data Via Polling
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../device_writes/" title="Writing Values To Pins And Selected Devices" class="md-nav__link">
+      Writing Values To Pins And Selected Devices
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../i2c/" title="I2C Reads And Writes" class="md-nav__link">
+      I2C Reads And Writes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mpu9250/" title="Configuring And Reading The MPU9250 9DOF Device" class="md-nav__link">
+      Configuring And Reading The MPU9250 9DOF Device
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ina219/" title="Configruing And Reading The INA219 Current, Shunt, And Power Monitor" class="md-nav__link">
+      Configruing And Reading The INA219 Current, Shunt, And Power Monitor
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../report_requests/" title="Report Requests" class="md-nav__link">
+      Report Requests
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../management/" title="Management Requests" class="md-nav__link">
+      Management Requests
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../exceptions/" title="Exceptions" class="md-nav__link">
+      Exceptions
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      System and Installation Requirements
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="System and Installation Requirements" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        System and Installation Requirements
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../python_3_verify/" title="Verifying Python 3 Version" class="md-nav__link">
+      Verifying Python 3 Version
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../python_install/" title="Python 3 Installation" class="md-nav__link">
+      Python 3 Installation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../install_pymata_rh/" title="Installing Pymata_Rh" class="md-nav__link">
+      Installing Pymata_Rh
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../firmata_express/" title="Installing FirmataExpress" class="md-nav__link">
+      Installing FirmataExpress
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../upgrade/" title="Upgrading Pymata_rh To The Latest Version" class="md-nav__link">
+      Upgrading Pymata_rh To The Latest Version
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../about/" title="About" class="md-nav__link">
+      About
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#firmata-input-data-collection-and-reporting" class="md-nav__link">
+    Firmata Input Data Collection and Reporting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#firmata-polls-for-data-changes" class="md-nav__link">
+    Firmata Polls For Data Changes
+  </a>
+  
+    <nav class="md-nav" aria-label="Firmata Polls For Data Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#digital-input" class="md-nav__link">
+    Digital Input
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analog-input" class="md-nav__link">
+    Analog Input
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#i2c-input" class="md-nav__link">
+    I2C Input
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sonar-hc-sr04-input" class="md-nav__link">
+    Sonar (HC-SR04) Input
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dht-temperaturehumidity-sensor-input" class="md-nav__link">
+    DHT Temperature/Humidity Sensor Input
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pymatarh-input-data-processing" class="md-nav__link">
+    PymataRh Input Data Processing
+  </a>
+  
+    <nav class="md-nav" aria-label="PymataRh Input Data Processing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pymata_rh-polling-for-input-data-changes" class="md-nav__link">
+    Pymata_rh Polling For Input Data Changes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-callbacks-instead-of-polling" class="md-nav__link">
+    Using Callbacks Instead Of Polling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions-that-can-be-registered-for-callbacks" class="md-nav__link">
+    Functions That Can Be Registered For Callbacks
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#callback-function-scope" class="md-nav__link">
+    Callback Function Scope
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-callback-return-values" class="md-nav__link">
+    The Callback Return Values
+  </a>
+  
+    <nav class="md-nav" aria-label="The Callback Return Values">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pin-type-identifiers" class="md-nav__link">
+    Pin Type Identifiers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="understanding-input-data-collection-and-reporting">Understanding Input Data Collection And Reporting</h1>
+<h2 id="firmata-input-data-collection-and-reporting">Firmata Input Data Collection and Reporting</h2>
+<p>FirmataExpress polls all input pins within the <em>loop method</em>
+of the sketch.</p>
+<p>Notification messages containing the pin number, pin type, and current data value
+for the pin
+are constructed and then transmitted to <em>pymata_rh</em>
+over the serial link.</p>
+<h2 id="firmata-polls-for-data-changes">Firmata Polls For Data Changes</h2>
+<h3 id="digital-input">Digital Input</h3>
+<p>For digital input pins, all the pins are polled with <em>each</em> iteration of the FirmataExpress <em>loop</em> function,
+with no delays. When the state of a pin has changed, Firmata creates a notification message 
+and transmits it over the serial link to pymata_rh.</p>
+<h3 id="analog-input">Analog Input</h3>
+<p>For analog input pins, each pin is polled, and its current value is reported,
+regardless of change. 
+All analog input pins are nominally polled every 19 milliseconds.</p>
+<h3 id="i2c-input">I2C Input</h3>
+<p>Unlike digital and analog inputs, most I2C devices report values only when a read request is issued 
+ to the i2c device. For these i2c devices, a read request results in a single reply. </p>
+<p>Some i2c devices may be placed in a continuous read mode. In this
+mode, the i2c device automatically sends update notifications,
+ usually as quickly as possible. When in continuous i2c mode, 
+the Firmata <em>loop</em> retrieves cached responses at a nominal polling rate of 19 milliseconds.</p>
+<h3 id="sonar-hc-sr04-input">Sonar (HC-SR04) Input</h3>
+<p>FirmataExpress supports HC-SR04 type distance sensors. The Firmata <em>loop</em> polls each device 
+and reports its current value regardless of change.
+The polling rate is nominally every 40 milliseconds for HC-SR04 type devices.</p>
+<h3 id="dht-temperaturehumidity-sensor-input">DHT Temperature/Humidity Sensor Input</h3>
+<p>Both DHT 11 and 22 temperature humidity sensors are supported. The polling rate is approximately
+2 seconds for each sensor because DHT devices require a long data capture time.</p>
+<h2 id="pymatarh-input-data-processing">PymataRh Input Data Processing</h2>
+<h3 id="pymata_rh-polling-for-input-data-changes">Pymata_rh <em>Polling</em> For Input Data Changes</h3>
+<p>As pymata_rh receives input data notifications, 
+it caches the data in internal data structures. These data structures retain
+the value reported as well as the time of occurrence.
+The application may query or poll these data structures to obtain the
+latest data updates for a given pin. </p>
+<p>The pymata_rh API methods that implement polling are:</p>
+<ul>
+<li>analog_read</li>
+<li>digital_read</li>
+<li>i2c_read_saved_data</li>
+<li>dht_read</li>
+<li>sonar_read</li>
+<li>mpu_9250_read_saved_data</li>
+<li>ina_read_bus_voltage_last</li>
+<li>ina_read_bus_current_last</li>
+<li>ina_read_supply_voltage_last</li>
+<li>ina_read_shunt_voltage_last</li>
+<li>ina_read_power_last</li>
+</ul>
+<h3 id="using-callbacks-instead-of-polling">Using <em>Callbacks</em> Instead Of Polling</h3>
+<p>Callback notification is much more efficient than using polling when dealing with input
+data. What is a callback? A callback is simply a function or method written by you that is registered
+with pymata_rh to automatically and immediately notify your application of data changes.</p>
+<h3 id="functions-that-can-be-registered-for-callbacks">Functions That Can Be Registered For Callbacks</h3>
+<p>You may optionally <em>register</em> callback functions when using any of the following pymata_rh API
+methods:</p>
+<ul>
+<li>set_pin_mode_analog_input</li>
+<li>set_pin_mode_digital_input</li>
+<li>set_pin_mode_digital_input_pullup</li>
+<li>set_pin_mode_dht</li>
+<li>set_pin_mode_sonar</li>
+<li>enable_analog_reporting (an alias for set_pin_mode_analog_input)</li>
+<li>i2c_read</li>
+<li>i2c_read_continuous</li>
+<li>i2c_read_restart_transmission</li>
+<li>mpu_9250_read_data (callback is established in mpu_9250_initialize)</li>
+<li>ina219 - a single callback is established in ina_initialize and is shared by all of the following:<pre><code>* ina_read_bus_voltage
+* ina_read_bus_current
+* ina_read_supply_voltage
+* ina_read_shunt_voltage
+* ina_read_power
+</code></pre>
+</li>
+</ul>
+<h2 id="callback-function-scope">Callback Function Scope</h2>
+<p>The scope of a callback is extremely flexible. 
+You may register a callback function:</p>
+<ul>
+<li>On a one to one basis for the desired input.</li>
+<li>Or you may group pins of a single type, such as analog input
+or digital input, </li>
+<li>Or even have a single callback function handle all input data notifications.</li>
+</ul>
+<p>The data that pymata_rh sends to the callback provides all the 
+information your program needs to differentiate one callback from another.</p>
+<p>You may also use callbacks with some pins while using polling for others. Polling is available
+for all input pins whether callbacks are in use or not.</p>
+<h2 id="the-callback-return-values">The Callback Return Values</h2>
+<p>A callback function is specified to accept a single input parameter, typically named
+<strong><em>data</em></strong>. The input parameter will be filled with a list when pymata_rh invokes the callback.</p>
+<p>A description of what is contained in the list
+is provided in the 
+<a href="https://htmlpreview.github.com/?https://github.com/MrYsLab/pymata_rh/blob/master/html/pymata_rh/index.html">reference API.</a> </p>
+<pre><code class="python">def my_callback(data):
+    &quot;&quot;&quot;
+    :param data: a list containing pin type, pin number, 
+                 data value and time-stamp
+    &quot;&quot;&quot;
+# Your code goes here to process the data
+</code></pre>
+
+<p>For example, the callback data for a digital input pin is structured as follows:</p>
+<pre><code class="python">[pin_type, pin_number, pin_value, raw_time_stamp]
+</code></pre>
+
+<h4 id="pin-type-identifiers">Pin Type Identifiers</h4>
+<p>All callbacks provide a <em>pin_type</em> as the first value in the list. A <em>pin_type</em> allows you to 
+quickly identify the source of the callback. In addition, all callbacks provide a raw time-stamp
+as the last entry of the list. Other fields are specific to the callback type.</p>
+<pre><code>INPUT = 0x00  # pin set as input
+OUTPUT = 0x01  # pin set as output
+ANALOG = 0x02  # analog pin in analogInput mode
+PWM = 0x03  # digital pin in PWM output mode
+SERVO = 0x04  # digital pin in Servo output mode
+I2C = 0x06  # pin included in I2C setup
+PULLUP = 0x0b  # Any pin in pullup mode
+SONAR = 0x0c  # Any pin in SONAR mode
+DHT = 0x0f  # DHT sensor
+MPU9250 = 0x10 # mpu
+INA219 = 0x11 # current sensor
+</code></pre>
+<p><strong>TIP</strong>: You should keep callback functions as short as possible. If processing callback
+data within the callback function results in blocking your application, 
+you may wish to consider spawning a separate
+processing thread.</p>
+<p><br>
+<br></p>
+<p>Copyright (C) 2020 Alan Yorinks. All Rights Reserved.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href=".." title="What Is pymata_rh?" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                What Is pymata_rh?
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../init/" title="The __init__ Method" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                The __init__ Method
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.a0c4167b.min.js"></script>
+      <script src="../assets/javascripts/bundle.fb26dd1d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: [],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.37585f48.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
