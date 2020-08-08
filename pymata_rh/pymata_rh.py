@@ -1018,9 +1018,17 @@ class PymataRh(threading.Thread):
         return self.ina_last_value_power
 
     def ina_sleep(self):
+        """
+        Place the ina219 into sleep mode.
+        """
+
         self.ina219.ina_sleep()
 
     def ina_wake(self):
+        """
+        Wake the ina219 from sleep model
+        """
+
         self.ina219.ina_wake()
 
     def mpu_9250_calibrate(self, log=True):

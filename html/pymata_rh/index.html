@@ -306,7 +306,7 @@ class PymataRh(threading.Thread):
         # flag to indicate we are in shutdown mode
         self.shutdown_flag = False
 
-        print(f&#34;pymata4:  Version {PrivateConstants.PYMATA_EXPRESS_THREADED_VERSION}\n\n&#34;
+        print(f&#34;pymata_rh:  Version {PrivateConstants.PYMATA_RH_VERSION}\n\n&#34;
               f&#34;Copyright (c) 2020 Alan Yorinks All Rights Reserved.\n&#34;)
         if not self.com_port:
             # user did not specify a com_port
@@ -729,7 +729,7 @@ class PymataRh(threading.Thread):
 
         :returns: PyMata Express version number.
         &#34;&#34;&#34;
-        return PrivateConstants.PYMATA_EXPRESS_THREADED_VERSION
+        return PrivateConstants.PYMATA_RH_VERSION
 
     def i2c_read_saved_data(self, address):
         &#34;&#34;&#34;
@@ -1061,9 +1061,17 @@ class PymataRh(threading.Thread):
         return self.ina_last_value_power
 
     def ina_sleep(self):
+        &#34;&#34;&#34;
+        Place the ina219 into sleep mode.
+        &#34;&#34;&#34;
+
         self.ina219.ina_sleep()
 
     def ina_wake(self):
+        &#34;&#34;&#34;
+        Wake the ina219 from sleep model
+        &#34;&#34;&#34;
+
         self.ina219.ina_wake()
 
     def mpu_9250_calibrate(self, log=True):
@@ -2465,7 +2473,7 @@ receiving a KeyboardInterrupt exception</p></div>
         # flag to indicate we are in shutdown mode
         self.shutdown_flag = False
 
-        print(f&#34;pymata4:  Version {PrivateConstants.PYMATA_EXPRESS_THREADED_VERSION}\n\n&#34;
+        print(f&#34;pymata_rh:  Version {PrivateConstants.PYMATA_RH_VERSION}\n\n&#34;
               f&#34;Copyright (c) 2020 Alan Yorinks All Rights Reserved.\n&#34;)
         if not self.com_port:
             # user did not specify a com_port
@@ -2888,7 +2896,7 @@ receiving a KeyboardInterrupt exception</p></div>
 
         :returns: PyMata Express version number.
         &#34;&#34;&#34;
-        return PrivateConstants.PYMATA_EXPRESS_THREADED_VERSION
+        return PrivateConstants.PYMATA_RH_VERSION
 
     def i2c_read_saved_data(self, address):
         &#34;&#34;&#34;
@@ -3220,9 +3228,17 @@ receiving a KeyboardInterrupt exception</p></div>
         return self.ina_last_value_power
 
     def ina_sleep(self):
+        &#34;&#34;&#34;
+        Place the ina219 into sleep mode.
+        &#34;&#34;&#34;
+
         self.ina219.ina_sleep()
 
     def ina_wake(self):
+        &#34;&#34;&#34;
+        Wake the ina219 from sleep model
+        &#34;&#34;&#34;
+
         self.ina219.ina_wake()
 
     def mpu_9250_calibrate(self, log=True):
@@ -4745,7 +4761,7 @@ version, i.e. 2.5</p>
 
     :returns: PyMata Express version number.
     &#34;&#34;&#34;
-    return PrivateConstants.PYMATA_EXPRESS_THREADED_VERSION</code></pre>
+    return PrivateConstants.PYMATA_RH_VERSION</code></pre>
 </details>
 </dd>
 <dt id="pymata_rh.pymata_rh.PymataRh.i2c_read"><code class="name flex">
@@ -5270,12 +5286,16 @@ a callback frame is specified as follows:</p>
 <span>def <span class="ident">ina_sleep</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Place the ina219 into sleep mode.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def ina_sleep(self):
+    &#34;&#34;&#34;
+    Place the ina219 into sleep mode.
+    &#34;&#34;&#34;
+
     self.ina219.ina_sleep()</code></pre>
 </details>
 </dd>
@@ -5283,12 +5303,16 @@ a callback frame is specified as follows:</p>
 <span>def <span class="ident">ina_wake</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Wake the ina219 from sleep model</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def ina_wake(self):
+    &#34;&#34;&#34;
+    Wake the ina219 from sleep model
+    &#34;&#34;&#34;
+
     self.ina219.ina_wake()</code></pre>
 </details>
 </dd>
