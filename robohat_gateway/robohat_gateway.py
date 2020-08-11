@@ -111,7 +111,7 @@ class RoboHatGateway(GatewayBase):
         :param topic: message topic
         :param payload: message payload
         """
-        raise NotImplementedError
+        self.robohat.digital_write(payload["pin"], payload['value'])
 
     def disable_analog_reporting(self, topic, payload):
         """
@@ -330,7 +330,7 @@ def robo_hat_gateway():
     parser.add_argument("-g", dest="log", default="False",
                         help="Set to True to turn logging on.")
     parser.add_argument("-l", dest="subscriber_list",
-                        default="from_robohat_gui", nargs='+',
+                        default="to_robohat_gateway", nargs='+',
                         help="Banyan topics space delimited: topic1 topic2 "
                              "topic3")
     parser.add_argument("-n", dest="process_name", default="RoboHatGateway",
