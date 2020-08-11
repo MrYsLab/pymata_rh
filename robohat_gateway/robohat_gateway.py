@@ -243,7 +243,9 @@ class RoboHatGateway(GatewayBase):
         :param topic: message topic
         :param payload: message payload
         """
-        raise NotImplementedError
+        pin = payload["pin"]
+        # self.pins_dictionary[pin][GatewayBase.PIN_MODE] = GatewayBase.DIGITAL_OUTPUT_MODE
+        self.robohat.set_pin_mode_digital_output(pin)
 
     def set_mode_i2c(self, topic, payload):
         """
@@ -263,7 +265,9 @@ class RoboHatGateway(GatewayBase):
         :param topic: message topic
         :param payload: message payload
         """
-        raise NotImplementedError
+        pin = payload["pin"]
+        # self.pins_dictionary[pin][GatewayBase.PIN_MODE] = GatewayBase.PWM_OUTPUT_MODE
+        self.robohat.set_pin_mode_pwm_output(pin)
 
     def set_mode_servo(self, topic, payload):
         """
