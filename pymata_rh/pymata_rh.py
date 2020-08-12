@@ -82,19 +82,21 @@ class PymataRh(threading.Thread):
         """
         self.pin_validation_map = {  # servo pins
             2: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
-                PrivateConstants.PWM],
+                PrivateConstants.PWM, PrivateConstants.SERVO],
             3: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
-                PrivateConstants.PWM],
-            4: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP, ],
-            5: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP, ],
+                PrivateConstants.PWM, PrivateConstants.SERVO],
+            4: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.SERVO],
+            5: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
+                PrivateConstants.SERVO],
             6: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
-                PrivateConstants.PWM],
+                PrivateConstants.PWM, PrivateConstants.SERVO],
             7: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
-                PrivateConstants.PWM],
+                PrivateConstants.PWM, PrivateConstants.SERVO],
             8: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
-                PrivateConstants.PWM],
+                PrivateConstants.PWM, PrivateConstants.SERVO],
             9: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP,
-                PrivateConstants.PWM],
+                PrivateConstants.PWM, PrivateConstants.SERVO],
 
             # NeoPixel
             11: [PrivateConstants.INPUT, PrivateConstants.OUTPUT, PrivateConstants.PULLUP],
@@ -104,13 +106,13 @@ class PymataRh(threading.Thread):
 
             # RCCs
             14: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
-                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+                 PrivateConstants.PULLUP, PrivateConstants.PWM, PrivateConstants.SERVO],
             15: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
-                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+                 PrivateConstants.PULLUP, PrivateConstants.PWM, PrivateConstants.SERVO],
             16: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
-                 PrivateConstants.PULLUP, PrivateConstants.PWM],
+                 PrivateConstants.PULLUP, PrivateConstants.PWM, PrivateConstants.SERVO],
             17: [PrivateConstants.ANALOG, PrivateConstants.INPUT, PrivateConstants.OUTPUT,
-                 PrivateConstants.PULLUP, PrivateConstants.PWM], }
+                 PrivateConstants.PULLUP, PrivateConstants.PWM, PrivateConstants.SERVO], }
 
         # initialize threading parent
         threading.Thread.__init__(self)
@@ -1441,7 +1443,7 @@ class PymataRh(threading.Thread):
         :param max_pulse: Max pulse width in ms.
 
         """
-        self._validate_pin_mode(pin, PrivateConstants.PWM)
+        self._validate_pin_mode(pin, PrivateConstants.SERVO)
 
         command = [pin, min_pulse & 0x7f, (min_pulse >> 7) & 0x7f,
                    max_pulse & 0x7f,

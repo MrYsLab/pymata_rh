@@ -203,7 +203,8 @@ class RoboHatGateway(GatewayBase):
         :param topic: message topic
         :param payload: message payload
         """
-        raise NotImplementedError
+        # self.pins_dictionary[pin][GatewayBase.PIN_MODE] = GatewayBase.SERVO_MODE
+        self.robohat.servo_write(payload["pin"], payload["position"])
 
     def set_mode_analog_input(self, topic, payload):
         """
@@ -213,7 +214,10 @@ class RoboHatGateway(GatewayBase):
         :param topic: message topic
         :param payload: message payload
         """
-        raise NotImplementedError
+        pin = payload["pin"]
+        # self.pins_dictionary[pin + self.first_analog_pin][GatewayBase.PIN_MODE] = \
+        #     GatewayBase.ANALOG_INPUT_MODE
+        self.robohat.set_pin_mode_analog_input(pin, self.analog_input_callback)
 
     def set_mode_digital_input(self, topic, payload):
         """
@@ -277,7 +281,9 @@ class RoboHatGateway(GatewayBase):
         :param topic: message topic
         :param payload: message payload
         """
-        raise NotImplementedError
+        pin = payload["pin"]
+        # self.pins_dictionary[pin][GatewayBase.PIN_MODE] = GatewayBase.SERVO_MODE
+        self.robohat.set_pin_mode_servo(pin)
 
     def set_mode_sonar(self, topic, payload):
         """
@@ -318,6 +324,13 @@ class RoboHatGateway(GatewayBase):
         :param payload: message payload
         """
         raise NotImplementedError
+
+    def analog_input_callback(self, data):
+        # data = [pin mode, pin, current reported value, timestamp]
+        # self.pins_dictionary[data[1] + self.arduino.first_analog_pin][GatewayBase.LAST_VALUE] = data[2]
+        payload = {'report': 'analog_input', 'pin': data[1],
+                   'value': data[2], 'timestamp': data[3]}
+        self.publish_payload(payload, 'from_robohat_gateway')
 
 
 def robo_hat_gateway():
