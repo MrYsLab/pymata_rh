@@ -74,7 +74,7 @@ class RoboHatGateway(GatewayBase):
 
         # instantiate pymata_rh
         self.robohat = pymata_rh.PymataRh(kwargs[
-                'com_port'], kwargs['arduino_instance_id'])
+                                              'com_port'], kwargs['arduino_instance_id'])
         # start the banyan receive loop
         try:
             self.receive_loop()
@@ -101,7 +101,22 @@ class RoboHatGateway(GatewayBase):
         :param topic: message topic
         :param payload: message payload
         """
-        raise NotImplementedError
+        if payload['command'] == 'initialize_mpu':
+            self.robohat.mpu_9250_initialize(callback=self.mpu_callback)
+        elif payload['command'] == 'read_mpu':
+            self.robohat.mpu_9250_read_data()
+        elif payload['command'] == 'initialize_ina':
+            self.robohat.ina_initialize(callback=self.ina_callback)
+        elif payload['command'] == 'get_ina_bus_voltage':
+            self.robohat.ina_read_bus_voltage()
+        elif payload['command'] == 'get_ina_bus_current':
+            self.robohat.ina_read_bus_current()
+        elif payload['command'] == 'get_supply_voltage':
+            self.robohat.ina_read_supply_voltage()
+        elif payload['command'] == 'get_shunt_voltage':
+            self.robohat.ina_read_shunt_voltage()
+        elif payload['command'] == 'get_power':
+            self.robohat.ina_read_power()
 
     def digital_write(self, topic, payload):
         """
@@ -227,7 +242,9 @@ class RoboHatGateway(GatewayBase):
         :param topic: message topic
         :param payload: message payload
         """
-        raise NotImplementedError
+        pin = payload["pin"]
+        # self.pins_dictionary[pin][GatewayBase.PIN_MODE] = GatewayBase.DIGITAL_INPUT_PULLUP_MODE
+        self.robohat.set_pin_mode_digital_input_pullup(pin, self.digital_input_callback)
 
     def set_mode_digital_input_pullup(self, topic, payload):
         """
@@ -332,6 +349,62 @@ class RoboHatGateway(GatewayBase):
                    'value': data[2], 'timestamp': data[3]}
         self.publish_payload(payload, 'from_robohat_gateway')
 
+    def digital_input_callback(self, data):
+        """
+        Digital input data change reported by Arduino
+        :param data:
+        :return:
+        """
+        # data = [pin mode, pin, current reported value, timestamp]
+        # self.pins_dictionary[data[1]][GatewayBase.LAST_VALUE] = data[2]
+        payload = {'report': 'digital_input', 'pin': data[1],
+                   'value': data[2], 'timestamp': data[3]}
+        self.publish_payload(payload, 'from_robohat_gateway')
+
+    def mpu_callback(self, data):
+        """
+        Digital input data change reported by Arduino
+        :param data:
+                 index[0] = pin type - for mpu9250 the value is 16
+                 index[1] = mpu address
+                 index[2] = accelerometer x axis
+                 index[3] = accelerometer y axis
+                 index[4] = accelerometer z axis
+                 index[5] = gyroscope x axis
+                 index[6] = gyroscope y axis
+                 index[7] = gyroscope z axis
+                 index[8] = magnetometer x axis
+                 index[9] = magnetometer y axis
+                 index[10] = magnetometer z axis
+                 index[11] = temperature
+                 index[12] = timestamp
+        :return:
+        """
+        # data = [pin mode, pin, current reported value, timestamp]
+        # self.pins_dictionary[data[1]][GatewayBase.LAST_VALUE] = data[2]
+        payload = {'report': 'mpu',
+                   'Ax': data[2], 'Ay': data[3], 'Az': data[4],
+                   'Gx': data[5], 'Gy': data[6], 'Gz': data[7],
+                   'Mx': data[8], 'My': data[9], 'Mz': data[10],
+                   'Temperature': data[11]
+                   }
+        self.publish_payload(payload, 'from_robohat_gateway')
+
+    def ina_callback(self, data):
+        payload = {}
+        cb_reported_value = data[3]
+        if data[2] == 0:
+            payload = {'report': 'ina', 'param': 'V', 'value': cb_reported_value}
+        elif data[2] == 1:
+            payload = {'report': 'ina', 'param': ' A', 'value': cb_reported_value}
+        elif data[2] == 2:
+            payload = {'report': 'ina', 'param': 'Supply', 'value': cb_reported_value}
+        elif data[2] == 3:
+            payload = {'report': 'ina', 'param': 'Shunt', 'value': cb_reported_value}
+        elif data[2] == 4:
+            payload = {'report': 'ina', 'param': 'Power', 'value': cb_reported_value}
+        self.publish_payload(payload, 'from_robohat_gateway')
+
 
 def robo_hat_gateway():
     parser = argparse.ArgumentParser()
@@ -374,7 +447,7 @@ def robo_hat_gateway():
         'loop_time': float(args.loop_time),
         'board_type': args.board_type,
         'com_port': args.com_port,
-        'arduino_instance_id':int(args.arduino_instance_id)
+        'arduino_instance_id': int(args.arduino_instance_id)
     }
     try:
         RoboHatGateway(args.subscriber_list, **kw_options)
