@@ -50,7 +50,7 @@ custom firmware you install on the Robo HAT MM1.
 Communication between the Python script and the Robo HAT MM1 is accomplished over a serial link at 115200 baud.
 
 
-### A [User's Guide is available,](https://mryslab.github.io/pymata_rh/) containing an annotated API as well as links to working examples.
+### A [User's Guide is available,](https://mryslab.github.io/pymata_rh/index.html) containing an annotated API as well as links to working examples.
 
 
 ## Major features
