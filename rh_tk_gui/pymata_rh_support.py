@@ -207,6 +207,15 @@ def servo1_value_change(*args):
 
 def servo2_mode_select():
     print('pymata_rh_support.servo2_mode_select')
+    mode = servo2_mode.get()
+    # digital out
+    if mode == '1':
+        w.slider_servo2_out.configure(to=1)
+    elif mode == '2':
+        w.slider_servo2_out.configure(to=255)
+    elif mode == '3':
+        w.slider_servo2_out.configure(to=180)
+    print(mode)
     sys.stdout.flush()
 
 def servo2_value_change(*args):
@@ -215,6 +224,16 @@ def servo2_value_change(*args):
 
 def servo3_mode_select():
     print('pymata_rh_support.servo3_mode_select')
+    mode = servo3_mode.get()
+    # digital out
+    if mode == '1':
+        w.slider_servo3_out.configure(to=1)
+    elif mode == '2':
+        w.slider_servo3_out.configure(to=255)
+    elif mode == '3':
+        w.slider_servo3_out.configure(to=180)
+    print(mode)
+    sys.stdout.flush()
     sys.stdout.flush()
 
 def servo3_value_change(*args):
@@ -223,6 +242,16 @@ def servo3_value_change(*args):
 
 def servo4_mode_select():
     print('pymata_rh_support.servo4_mode_select')
+    mode = servo4_mode.get()
+    # digital out
+    if mode == '1':
+        w.slider_servo4_out.configure(to=1)
+    elif mode == '2':
+        w.slider_servo4_out.configure(to=255)
+    elif mode == '3':
+        w.slider_servo4_out.configure(to=180)
+    print(mode)
+    sys.stdout.flush()
     sys.stdout.flush()
 
 def servo4_value_change(*args):
@@ -231,6 +260,16 @@ def servo4_value_change(*args):
 
 def servo5_mode_select():
     print('pymata_rh_support.servo5_mode_select')
+    mode = servo5_mode.get()
+    # digital out
+    if mode == '1':
+        w.slider_servo5_out.configure(to=1)
+    elif mode == '2':
+        w.slider_servo5_out.configure(to=255)
+    elif mode == '3':
+        w.slider_servo5_out.configure(to=180)
+    print(mode)
+    sys.stdout.flush()
     sys.stdout.flush()
 
 def servo5_value_change(*args):
@@ -239,6 +278,16 @@ def servo5_value_change(*args):
 
 def servo6_mode_select():
     print('pymata_rh_support.servo6_mode_select')
+    mode = servo6_mode.get()
+    # digital out
+    if mode == '1':
+        w.slider_servo6_out.configure(to=1)
+    elif mode == '2':
+        w.slider_servo6_out.configure(to=255)
+    elif mode == '3':
+        w.slider_servo6_out.configure(to=180)
+    print(mode)
+    sys.stdout.flush()
     sys.stdout.flush()
 
 def servo6_value_change(*args):
@@ -247,6 +296,16 @@ def servo6_value_change(*args):
 
 def servo7_mode_select():
     print('pymata_rh_support.servo7_mode_select')
+    mode = servo7_mode.get()
+    # digital out
+    if mode == '1':
+        w.slider_servo7_out.configure(to=1)
+    elif mode == '2':
+        w.slider_servo7_out.configure(to=255)
+    elif mode == '3':
+        w.slider_servo7_out.configure(to=180)
+    print(mode)
+    sys.stdout.flush()
     sys.stdout.flush()
 
 def servo7_value_change(*args):
@@ -259,6 +318,16 @@ def servo8_mode_select():
 
 def lec_mode_select():
     print('pymata_rh_support.lec_mode_select')
+    mode = servo8_mode.get()
+    # digital out
+    if mode == '1':
+        w.slider_servo8_out.configure(to=1)
+    elif mode == '2':
+        w.slider_servo8_out.configure(to=255)
+    elif mode == '3':
+        w.slider_servo8_out.configure(to=180)
+    print(mode)
+    sys.stdout.flush()
     sys.stdout.flush()
 
 def led_value_change(*args):
@@ -279,10 +348,28 @@ def rcc1_mode_select():
 
 def rcc1_value_change(*args):
     print('pymata_rh_support.rcc1_value_change')
+    mode = rcc1_mode.get()
+    # digital out
+    if mode == '1':
+        w.slider_rcc1_out.configure(to=1)
+    elif mode == '2':
+        w.slider_rcc1_out.configure(to=255)
+    elif mode == '3':
+        w.slider_rcc1_out.configure(to=180)
+    print(mode)
     sys.stdout.flush()
 
 def rcc2_mode_select():
     print('pymata_rh_support.rcc2_mode_select')
+    mode = rcc2_mode.get()
+    # digital out
+    if mode == '1':
+        w.slider_rcc2_out.configure(to=1)
+    elif mode == '2':
+        w.slider_rcc2_out.configure(to=255)
+    elif mode == '3':
+        w.slider_rcc2_out.configure(to=180)
+    print(mode)
     sys.stdout.flush()
 
 def rcc2_value_change(*args):
@@ -291,6 +378,15 @@ def rcc2_value_change(*args):
 
 def rcc3_mode_select():
     print('pymata_rh_support.rcc3_mode_select')
+    mode = rcc3_mode.get()
+    # digital out
+    if mode == '1':
+        w.slider_rcc3_out.configure(to=1)
+    elif mode == '2':
+        w.slider_rcc3_out.configure(to=255)
+    elif mode == '3':
+        w.slider_rcc3_out.configure(to=180)
+    print(mode)
     sys.stdout.flush()
 
 def rcc3_value_change(*args):
@@ -299,6 +395,15 @@ def rcc3_value_change(*args):
 
 def rcc4_mode_select():
     print('pymata_rh_support.rcc4_mode_select')
+    mode = rcc4_mode.get()
+    # digital out
+    if mode == '1':
+        w.slider_rcc4_out.configure(to=1)
+    elif mode == '2':
+        w.slider_rcc4_out.configure(to=255)
+    elif mode == '3':
+        w.slider_rcc4_out.configure(to=180)
+    print(mode)
     sys.stdout.flush()
 
 def mpu_start():
