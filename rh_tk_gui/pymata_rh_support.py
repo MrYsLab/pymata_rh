@@ -17,8 +17,12 @@
 #    Aug 23, 2020 03:45:05 PM EDT  platform: Linux
 #    Aug 23, 2020 04:20:00 PM EDT  platform: Linux
 #    Aug 23, 2020 04:30:56 PM EDT  platform: Linux
+#    Aug 24, 2020 06:51:01 PM EDT  platform: Linux
+#    Aug 24, 2020 06:58:00 PM EDT  platform: Linux
+#    Aug 25, 2020 07:56:00 AM EDT  platform: Linux
 
 import sys
+from python_banyan.banyan_base import BanyanBase
 
 try:
     import Tkinter as tk
@@ -183,10 +187,12 @@ def set_Tk_var():
     serv8_mode = tk.StringVar()
 
 def init(top, gui, *args, **kwargs):
-    global w, top_level, root
+    global w, top_level, root, bgs
     w = gui
     top_level = top
     root = top
+    bgs = BanyanGuiSupport()
+    # bgs.set_subscriber_topic('from_robohat_gateway')
 
 def servo1_mode_select():
     print('pymata_rh_support.servo1_mode_select')
@@ -198,7 +204,8 @@ def servo1_mode_select():
         w.slider_servo1_out.configure(to=255)
     elif mode == '3':
         w.slider_servo1_out.configure(to=180)
-    print(mode)
+    # print(mode)
+    bgs.set_pin_mode(2, mode)
     sys.stdout.flush()
 
 def servo1_value_change(*args):
@@ -215,7 +222,8 @@ def servo2_mode_select():
         w.slider_servo2_out.configure(to=255)
     elif mode == '3':
         w.slider_servo2_out.configure(to=180)
-    print(mode)
+    # print(mode)
+    bgs.set_pin_mode(3, mode)
     sys.stdout.flush()
 
 def servo2_value_change(*args):
@@ -232,8 +240,8 @@ def servo3_mode_select():
         w.slider_servo3_out.configure(to=255)
     elif mode == '3':
         w.slider_servo3_out.configure(to=180)
-    print(mode)
-    sys.stdout.flush()
+    # print(mode)
+    bgs.set_pin_mode(4, mode)
     sys.stdout.flush()
 
 def servo3_value_change(*args):
@@ -250,8 +258,9 @@ def servo4_mode_select():
         w.slider_servo4_out.configure(to=255)
     elif mode == '3':
         w.slider_servo4_out.configure(to=180)
-    print(mode)
-    sys.stdout.flush()
+    # print(mode)
+    bgs.set_pin_mode(5, mode)
+
     sys.stdout.flush()
 
 def servo4_value_change(*args):
@@ -268,8 +277,8 @@ def servo5_mode_select():
         w.slider_servo5_out.configure(to=255)
     elif mode == '3':
         w.slider_servo5_out.configure(to=180)
-    print(mode)
-    sys.stdout.flush()
+    # print(mode)
+    bgs.set_pin_mode(6, mode)
     sys.stdout.flush()
 
 def servo5_value_change(*args):
@@ -286,8 +295,8 @@ def servo6_mode_select():
         w.slider_servo6_out.configure(to=255)
     elif mode == '3':
         w.slider_servo6_out.configure(to=180)
-    print(mode)
-    sys.stdout.flush()
+    # print(mode)
+    bgs.set_pin_mode(7, mode)
     sys.stdout.flush()
 
 def servo6_value_change(*args):
@@ -304,8 +313,8 @@ def servo7_mode_select():
         w.slider_servo7_out.configure(to=255)
     elif mode == '3':
         w.slider_servo7_out.configure(to=180)
-    print(mode)
-    sys.stdout.flush()
+    # print(mode)
+    bgs.set_pin_mode(8, mode)
     sys.stdout.flush()
 
 def servo7_value_change(*args):
@@ -314,10 +323,6 @@ def servo7_value_change(*args):
 
 def servo8_mode_select():
     print('pymata_rh_support.servo8_mode_select')
-    sys.stdout.flush()
-
-def lec_mode_select():
-    print('pymata_rh_support.lec_mode_select')
     mode = servo8_mode.get()
     # digital out
     if mode == '1':
@@ -326,12 +331,31 @@ def lec_mode_select():
         w.slider_servo8_out.configure(to=255)
     elif mode == '3':
         w.slider_servo8_out.configure(to=180)
-    print(mode)
+    # print(mode)
+    bgs.set_pin_mode(9, mode)
     sys.stdout.flush()
+
+def servo8_value_change(*args):
+    print('pymata_rh_support.servo8_value_change')
+    sys.stdout.flush()
+
+def led_mode_select():
+    # mode is limited to digital out
+    mode = '1'
+    print('pymata_rh_support.lec_mode_select')
+    # digital out
+    w.slider_led_out.configure(to=1)
+    # print(mode)
+    bgs.set_pin_mode(13, mode)
+    led_value_change(led_output_value.get())
     sys.stdout.flush()
 
 def led_value_change(*args):
     print('pymata_rh_support.led_value_change')
+    # get the current value of the slider
+    # value = int(led_output_value.get())
+    args = int(args[0])
+    bgs.write_digital_out(13, args)
     sys.stdout.flush()
 
 def neopixel_mode_select():
@@ -414,11 +438,48 @@ def mpu_stop():
     print('pymata_rh_support.mpu_stop')
     sys.stdout.flush()
 
+def ina_read():
+    print('pymata_rh_support.ina_read')
+    sys.stdout.flush()
+
 def destroy_window():
     # Function which closes the window.
     global top_level
     top_level.destroy()
     top_level = None
+
+class BanyanGuiSupport(BanyanBase):
+    def __init__(self):
+        if len(sys.argv) > 1:
+            super(BanyanGuiSupport, self).__init__(back_plane_ip_address=sys.argv[1])
+        else:
+            super(BanyanGuiSupport, self).__init__()
+        self.set_subscriber_topic('from_robohat_gateway')
+        root.after(1000, self.incoming)
+        self.pin_mode_command_map = {'1': 'set_mode_digital_output',
+                                     '2': 'set_mode_pwm',
+                                     '3': 'set_mode_servo',
+                                     '4': 'set_mode_digital_input',
+                                     '5': 'set_mode_digital_input_pullup',
+                                     '6': 'set_mode_analog_input',
+                                     '7': 'set_mode_dht',
+                                     '8': 'set_mode_sonar'}
+
+    def incoming(self):
+        print('incoming')
+        root.after(1000, self.incoming)
+
+    def set_pin_mode(self, pin, mode):
+        if mode in self.pin_mode_command_map.keys():
+            # build pin mode message and transmit it
+            payload = {'command': self.pin_mode_command_map[mode], 'pin': int(pin)}
+            # print(payload)
+            self.publish_payload(payload, 'to_robohat_gateway')
+            print('s')
+
+    def write_digital_out(self, pin, value):
+        payload = {'command': 'digital_write', 'pin': pin, 'value': value}
+        self.publish_payload(payload, 'to_robohat_gateway')
 
 if __name__ == '__main__':
     import pymata_rh
