@@ -188,268 +188,119 @@ def init(top, gui, *args, **kwargs):
     top_level = top
     root = top
     bgs = BanyanGuiSupport()
-    # bgs.set_subscriber_topic('from_robohat_gateway')
 
 def servo1_mode_select():
-    print('pymata_rh_support.servo1_mode_select')
-    mode = servo1_mode.get()
-    # digital out
-    if mode == '1':
-        w.slider_servo1_out.configure(to=1)
-    elif mode == '2':
-        w.slider_servo1_out.configure(to=255)
-    elif mode == '3':
-        w.slider_servo1_out.configure(to=180)
-    # print(mode)
-    bgs.set_pin_mode(2, mode)
-    # if this is an output mode, set the value to the current
-    # slider value
-    if mode in ['1', '2', '3']:
-        servo1_value_change(servo1_output_value.get())
+    bgs.set_pin_mode(2, servo1_mode.get(), servo1_output_value, w.slider_servo1_out)
 
-    sys.stdout.flush()
 
 def servo1_value_change(*args):
-    print('pymata_rh_support.servo1_value_change')
-    sys.stdout.flush()
+    bgs.slider_value_changed(2, servo1_mode.get(), int(args[0]))
+
 
 def servo2_mode_select():
-    print('pymata_rh_support.servo2_mode_select')
-    mode = servo2_mode.get()
-    # digital out
-    if mode == '1':
-        w.slider_servo2_out.configure(to=1)
-    elif mode == '2':
-        w.slider_servo2_out.configure(to=255)
-    elif mode == '3':
-        w.slider_servo2_out.configure(to=180)
-    # print(mode)
-    bgs.set_pin_mode(3, mode)
-    sys.stdout.flush()
+    bgs.set_pin_mode(3, servo2_mode.get(), servo2_output_value, w.slider_servo2_out)
+
 
 def servo2_value_change(*args):
-    print('pymata_rh_support.servo2_value_change')
-    sys.stdout.flush()
+    bgs.slider_value_changed(3, servo2_mode.get(), int(args[0]))
+
 
 def servo3_mode_select():
-    print('pymata_rh_support.servo3_mode_select')
-    mode = servo3_mode.get()
-    # digital out
-    if mode == '1':
-        w.slider_servo3_out.configure(to=1)
-    elif mode == '2':
-        w.slider_servo3_out.configure(to=255)
-    elif mode == '3':
-        w.slider_servo3_out.configure(to=180)
-    # print(mode)
-    bgs.set_pin_mode(4, mode)
-    rcc3_value_change(rcc3_output_value.get())
-    sys.stdout.flush()
+    bgs.set_pin_mode(4, servo3_mode.get(), servo3_output_value, w.slider_servo3_out)
+
 
 def servo3_value_change(*args):
-    print('pymata_rh_support.servo3_value_change')
-    mode = mode = servo3_mode.get()
-    args = int(args[0])
-    if mode == '1':
-        bgs.write_digital_out(4, args)
-    elif mode == '2':
-        pass
-    elif mode == '3':
-        bgs.set_servo_angle(4, args)
-    sys.stdout.flush()
+    bgs.slider_value_changed(4, servo3_mode.get(), int(args[0]))
+
 
 def servo4_mode_select():
-    print('pymata_rh_support.servo4_mode_select')
-    mode = servo4_mode.get()
-    # digital out
-    if mode == '1':
-        w.slider_servo4_out.configure(to=1)
-    elif mode == '2':
-        w.slider_servo4_out.configure(to=255)
-    elif mode == '3':
-        w.slider_servo4_out.configure(to=180)
-    # print(mode)
-    bgs.set_pin_mode(5, mode)
+    bgs.set_pin_mode(5, servo4_mode.get(), servo4_output_value, w.slider_servo4_out)
 
-    sys.stdout.flush()
 
 def servo4_value_change(*args):
-    print('pymata_rh_support.servo4_value_change')
-    sys.stdout.flush()
+    bgs.slider_value_changed(5, servo4_mode.get(), int(args[0]))
+
 
 def servo5_mode_select():
-    print('pymata_rh_support.servo5_mode_select')
-    mode = servo5_mode.get()
-    # digital out
-    if mode == '1':
-        w.slider_servo5_out.configure(to=1)
-    elif mode == '2':
-        w.slider_servo5_out.configure(to=255)
-    elif mode == '3':
-        w.slider_servo5_out.configure(to=180)
-    # print(mode)
-    bgs.set_pin_mode(6, mode)
-    sys.stdout.flush()
+    bgs.set_pin_mode(6, servo5_mode.get(), servo5_output_value, w.slider_servo5_out)
+
 
 def servo5_value_change(*args):
-    print('pymata_rh_support.servo5_value_change')
-    sys.stdout.flush()
+    bgs.slider_value_changed(6, servo5_mode.get(), int(args[0]))
+
 
 def servo6_mode_select():
-    print('pymata_rh_support.servo6_mode_select')
-    mode = servo6_mode.get()
-    # digital out
-    if mode == '1':
-        w.slider_servo6_out.configure(to=1)
-    elif mode == '2':
-        w.slider_servo6_out.configure(to=255)
-    elif mode == '3':
-        w.slider_servo6_out.configure(to=180)
-    # print(mode)
-    bgs.set_pin_mode(7, mode)
-    sys.stdout.flush()
+    bgs.set_pin_mode(7, servo6_mode.get(), servo6_output_value, w.slider_servo6_out)
+
 
 def servo6_value_change(*args):
-    print('pymata_rh_support.servo6_value_change')
-    sys.stdout.flush()
+    bgs.slider_value_changed(7, servo6_mode.get(), int(args[0]))
+
 
 def servo7_mode_select():
-    print('pymata_rh_support.servo7_mode_select')
-    mode = servo7_mode.get()
-    # digital out
-    if mode == '1':
-        w.slider_servo7_out.configure(to=1)
-    elif mode == '2':
-        w.slider_servo7_out.configure(to=255)
-    elif mode == '3':
-        w.slider_servo7_out.configure(to=180)
-    # print(mode)
-    bgs.set_pin_mode(8, mode)
-    sys.stdout.flush()
+    bgs.set_pin_mode(8, servo7_mode.get(), servo7_output_value, w.slider_servo7_out)
+
 
 def servo7_value_change(*args):
-    print('pymata_rh_support.servo7_value_change')
-    sys.stdout.flush()
+    bgs.slider_value_changed(8, servo7_mode.get(), int(args[0]))
+
 
 def servo8_mode_select():
-    print('pymata_rh_support.servo8_mode_select')
-    mode = servo8_mode.get()
-    # digital out
-    if mode == '1':
-        w.slider_servo8_out.configure(to=1)
-    elif mode == '2':
-        w.slider_servo8_out.configure(to=255)
-    elif mode == '3':
-        w.slider_servo8_out.configure(to=180)
-    # print(mode)
-    bgs.set_pin_mode(9, mode)
-    sys.stdout.flush()
+    bgs.set_pin_mode(9, servo8_mode.get(), servo8_output_value, w.slider_servo8_out)
+
 
 def servo8_value_change(*args):
-    print('pymata_rh_support.servo8_value_change')
-    sys.stdout.flush()
+    bgs.slider_value_changed(9, servo8_mode.get(), int(args[0]))
+
 
 def led_mode_select():
     # mode is limited to digital out
     mode = '1'
-    print('pymata_rh_support.lec_mode_select')
-    # digital out
-    w.slider_led_out.configure(to=1)
-    # print(mode)
-    bgs.set_pin_mode(13, mode)
-    led_value_change(led_output_value.get())
-    sys.stdout.flush()
+    bgs.set_pin_mode(13, led_mode.get(), led_output_value, w.slider_led_out)
+
 
 def led_value_change(*args):
-    print('pymata_rh_support.led_value_change')
-    # get the current value of the slider
-    # value = int(led_output_value.get())
-    args = int(args[0])
-    bgs.write_digital_out(13, args)
-    sys.stdout.flush()
+    bgs.slider_value_changed(13, led_mode.get(), int(args[0]))
+
 
 def neopixel_mode_select():
-    print('pymata_rh_support.neopixel_mode_select')
-    sys.stdout.flush()
+    bgs.set_pin_mode(11, neopixel_mode.get(), neopixel_output_value, w.slider_neopixel_out)
+
 
 def neopixel_value_change(*args):
-    print('pymata_rh_support.neopixel_value_change')
-    sys.stdout.flush()
+    bgs.slider_value_changed(13, neopixel_mode.get(), int(args[0]))
+
 
 def rcc1_mode_select():
-    print('pymata_rh_support.rcc1_mode_select')
-    sys.stdout.flush()
+    bgs.set_pin_mode(14, rcc1_mode.get(), rcc1_output_value, w.slider_rcc1_out)
+
 
 def rcc1_value_change(*args):
-    print('pymata_rh_support.rcc1_value_change')
-    mode = rcc1_mode.get()
-    # digital out
-    if mode == '1':
-        w.slider_rcc1_out.configure(to=1)
-    elif mode == '2':
-        w.slider_rcc1_out.configure(to=255)
-    elif mode == '3':
-        w.slider_rcc1_out.configure(to=180)
-    print(mode)
-    sys.stdout.flush()
+    bgs.slider_value_changed(14, rcc1_mode.get(), int(args[0]))
+
 
 def rcc2_mode_select():
-    print('pymata_rh_support.rcc2_mode_select')
-    mode = rcc2_mode.get()
-    # digital out
-    if mode == '1':
-        w.slider_rcc2_out.configure(to=1)
-    elif mode == '2':
-        w.slider_rcc2_out.configure(to=255)
-    elif mode == '3':
-        w.slider_rcc2_out.configure(to=180)
-    print(mode)
-    sys.stdout.flush()
+    bgs.set_pin_mode(15, rcc2_mode.get(), rcc2_output_value, w.slider_rcc2_out)
 
 def rcc2_value_change(*args):
-    print('pymata_rh_support.rcc2_value_change')
-    sys.stdout.flush()
+    bgs.slider_value_changed(15, rcc2_mode.get(), int(args[0]))
+
 
 def rcc3_mode_select():
-    print('pymata_rh_support.rcc3_mode_select')
-    mode = rcc3_mode.get()
-    # digital out
-    if mode == '1':
-        w.slider_rcc3_out.configure(to=1)
-    elif mode == '2':
-        w.slider_rcc3_out.configure(to=255)
-    elif mode == '3':
-        w.slider_rcc3_out.configure(to=180)
-    bgs.set_pin_mode(16, mode)
+    bgs.set_pin_mode(16, rcc3_mode.get(), rcc3_output_value, w.slider_rcc3_out)
 
-    rcc3_value_change(rcc3_output_value.get())
-
-    print(mode)
-    sys.stdout.flush()
 
 def rcc3_value_change(*args):
-    print('pymata_rh_support.rcc3_value_change')
-    mode = mode = rcc3_mode.get()
-    args = int(args[0])
-    if mode == '1':
-        bgs.write_digital_out(16, args)
-    elif mode == '3':
-        bgs.set_servo_angle(16, args)
+    bgs.slider_value_changed(16, rcc3_mode.get(), int(args[0]))
 
-    sys.stdout.flush()
 
 def rcc4_mode_select():
-    print('pymata_rh_support.rcc4_mode_select')
-    mode = rcc4_mode.get()
-    # digital out
-    if mode == '1':
-        w.slider_rcc4_out.configure(to=1)
-    elif mode == '2':
-        w.slider_rcc4_out.configure(to=255)
-    elif mode == '3':
-        w.slider_rcc4_out.configure(to=180)
-    print(mode)
-    sys.stdout.flush()
+    bgs.set_pin_mode(17, rcc4_mode.get(), rcc4_output_value, w.slider_rcc4_out)
+
+
+def rcc4_value_change(*args):
+    bgs.slider_value_changed(17, rcc4_mode.get(), int(args[0]))
+
 
 def mpu_start():
     print('pymata_rh_support.mpu_start')
@@ -490,16 +341,43 @@ class BanyanGuiSupport(BanyanBase):
         print('incoming')
         root.after(1000, self.incoming)
 
-    def set_pin_mode(self, pin, mode):
+    def set_pin_mode(self, pin, mode, slider_value_variable, slider_control):
         if mode in self.pin_mode_command_map.keys():
+            # digital out
+            if mode == '1':
+                # slider_value_variable.configure(to=1)
+                slider_control.configure(to=1)
+            elif mode == '2':
+                slider_control.configure(to=255)
+            elif mode == '3':
+                slider_control.configure(to=180)
             # build pin mode message and transmit it
             payload = {'command': self.pin_mode_command_map[mode], 'pin': int(pin)}
             # print(payload)
             self.publish_payload(payload, 'to_robohat_gateway')
             print('s')
+        # output modes
+        if mode in ['1', '2', '3']:
+            value = int(slider_value_variable.get())
+            self.slider_value_changed(pin, mode, value)
+
+    def slider_value_changed(self, pin, mode, value):
+        # digital output
+        if mode == '1':
+            self.write_digital_out(pin, value)
+        # pwm
+        elif mode == '2':
+            self.write_pwm(pin, value)
+        # servo
+        elif mode == '3':
+            self.set_servo_angle(pin, value)
 
     def write_digital_out(self, pin, value):
         payload = {'command': 'digital_write', 'pin': pin, 'value': value}
+        self.publish_payload(payload, 'to_robohat_gateway')
+
+    def write_pwm(self, pin, value):
+        payload = {'command': 'pwm_write', 'pin': pin, 'value': value}
         self.publish_payload(payload, 'to_robohat_gateway')
 
     def set_servo_angle(self, pin, value):
