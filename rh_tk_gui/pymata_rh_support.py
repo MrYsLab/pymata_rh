@@ -177,14 +177,10 @@ def set_Tk_var():
     servo7_output_value = tk.DoubleVar()
     global servo7_mode
     servo7_mode = tk.StringVar()
-    global serv7_mode
-    serv7_mode = tk.StringVar()
     global servo8_output_value
     servo8_output_value = tk.DoubleVar()
     global servo8_mode
     servo8_mode = tk.StringVar()
-    global serv8_mode
-    serv8_mode = tk.StringVar()
 
 def init(top, gui, *args, **kwargs):
     global w, top_level, root, bgs
@@ -206,6 +202,11 @@ def servo1_mode_select():
         w.slider_servo1_out.configure(to=180)
     # print(mode)
     bgs.set_pin_mode(2, mode)
+    # if this is an output mode, set the value to the current
+    # slider value
+    if mode in ['1', '2', '3']:
+        servo1_value_change(servo1_output_value.get())
+
     sys.stdout.flush()
 
 def servo1_value_change(*args):
@@ -242,10 +243,19 @@ def servo3_mode_select():
         w.slider_servo3_out.configure(to=180)
     # print(mode)
     bgs.set_pin_mode(4, mode)
+    rcc3_value_change(rcc3_output_value.get())
     sys.stdout.flush()
 
 def servo3_value_change(*args):
     print('pymata_rh_support.servo3_value_change')
+    mode = mode = servo3_mode.get()
+    args = int(args[0])
+    if mode == '1':
+        bgs.write_digital_out(4, args)
+    elif mode == '2':
+        pass
+    elif mode == '3':
+        bgs.set_servo_angle(4, args)
     sys.stdout.flush()
 
 def servo4_mode_select():
@@ -410,11 +420,22 @@ def rcc3_mode_select():
         w.slider_rcc3_out.configure(to=255)
     elif mode == '3':
         w.slider_rcc3_out.configure(to=180)
+    bgs.set_pin_mode(16, mode)
+
+    rcc3_value_change(rcc3_output_value.get())
+
     print(mode)
     sys.stdout.flush()
 
 def rcc3_value_change(*args):
     print('pymata_rh_support.rcc3_value_change')
+    mode = mode = rcc3_mode.get()
+    args = int(args[0])
+    if mode == '1':
+        bgs.write_digital_out(16, args)
+    elif mode == '3':
+        bgs.set_servo_angle(16, args)
+
     sys.stdout.flush()
 
 def rcc4_mode_select():
@@ -480,6 +501,11 @@ class BanyanGuiSupport(BanyanBase):
     def write_digital_out(self, pin, value):
         payload = {'command': 'digital_write', 'pin': pin, 'value': value}
         self.publish_payload(payload, 'to_robohat_gateway')
+
+    def set_servo_angle(self, pin, value):
+        payload = {'command': 'servo_position', 'pin': pin, 'position': value}
+        self.publish_payload(payload, 'to_robohat_gateway')
+
 
 if __name__ == '__main__':
     import pymata_rh
