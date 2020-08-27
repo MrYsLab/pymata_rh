@@ -306,14 +306,19 @@ def rcc4_value_change(*args):
 
 def mpu_start():
     print('pymata_rh_support.mpu_start')
-    sys.stdout.flush()
+    payload = {'command': 'initialize_mpu'}
+    bgs.publish_payload(payload, 'to_robohat_gateway')
+    payload = {'command': 'read_mpu'}
+    bgs.publish_payload(payload, 'to_robohat_gateway')
 
-def mpu_stop():
-    print('pymata_rh_support.mpu_stop')
     sys.stdout.flush()
 
 def ina_read():
     print('pymata_rh_support.ina_read')
+    payload = {'command': 'ina_initialize'}
+    bgs.publish_payload(payload, 'to_robohat_gateway')
+    # payload = {'command': 'read_mpu'}
+    # bgs.publish_payload(payload, 'to_robohat_gateway')
     sys.stdout.flush()
 
 def destroy_window():
@@ -357,6 +362,8 @@ class BanyanGuiSupport(BanyanBase):
                                 ]
         self.digital_to_analog_pin_map = {14: 0, 15:1, 16:2, 17:3 }
 
+        # flag to determine if we already intiialized the mpu
+
     def get_message(self):
         """
         This method is called from the tkevent loop "after" call.
@@ -386,11 +393,28 @@ class BanyanGuiSupport(BanyanBase):
             sys.exit(0)
 
     def incoming_message_processing(self, topic, payload):
-        if payload['report'] == 'analog_input':
+        # print('got: ', topic, payload)
+        if payload['report'] == 'mpu':
+
+            acc_x.set(payload['Ax'])
+            acc_y.set(payload['Ay'])
+            acc_z.set(payload['Az'])
+
+            gyro_x.set(payload['Gx'])
+            gyro_y.set(payload['Gy'])
+            gyro_z.set(payload['Gz'])
+
+            mag_x.set(payload['Mx'])
+            mag_y.set(payload['My'])
+            mag_z.set(payload['Mz'])
+
+            mpu_temp.set(payload['Temperature'])
+            return
+        elif payload['report'] == 'analog_input':
             # readjust pin to digital pin number
             digital_pin = payload['pin'] + 14
             # set the output widget value for this pin
-        else:
+        elif payload['report'] == 'digital_input':
             digital_pin = payload['pin']
         entry = next(item for item in  self.input_value_map if item['pin'] == digital_pin)
         widget = entry['widget']
