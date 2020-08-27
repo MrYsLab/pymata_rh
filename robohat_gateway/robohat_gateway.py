@@ -244,7 +244,7 @@ class RoboHatGateway(GatewayBase):
         """
         pin = payload["pin"]
         # self.pins_dictionary[pin][GatewayBase.PIN_MODE] = GatewayBase.DIGITAL_INPUT_PULLUP_MODE
-        self.robohat.set_pin_mode_digital_input_pullup(pin, self.digital_input_callback)
+        self.robohat.set_pin_mode_digital_input(pin, self.digital_input_callback)
 
     def set_mode_digital_input_pullup(self, topic, payload):
         """
@@ -254,7 +254,9 @@ class RoboHatGateway(GatewayBase):
         :param topic: message topic
         :param payload: message payload
         """
-        raise NotImplementedError
+        pin = payload["pin"]
+        # self.pins_dictionary[pin][GatewayBase.PIN_MODE] = GatewayBase.DIGITAL_INPUT_PULLUP_MODE
+        self.robohat.set_pin_mode_digital_input_pullup(pin, self.digital_input_callback)
 
     def set_mode_digital_output(self, topic, payload):
         """

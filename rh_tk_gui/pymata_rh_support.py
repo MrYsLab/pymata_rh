@@ -22,6 +22,8 @@
 #    Aug 25, 2020 07:56:00 AM EDT  platform: Linux
 
 import sys
+import msgpack
+import zmq
 from python_banyan.banyan_base import BanyanBase
 
 try:
@@ -327,7 +329,9 @@ class BanyanGuiSupport(BanyanBase):
         else:
             super(BanyanGuiSupport, self).__init__()
         self.set_subscriber_topic('from_robohat_gateway')
-        root.after(1000, self.incoming)
+        root.after(1000, self.get_message)
+
+        # input modes
         self.pin_mode_command_map = {'1': 'set_mode_digital_output',
                                      '2': 'set_mode_pwm',
                                      '3': 'set_mode_servo',
@@ -336,10 +340,64 @@ class BanyanGuiSupport(BanyanBase):
                                      '6': 'set_mode_analog_input',
                                      '7': 'set_mode_dht',
                                      '8': 'set_mode_sonar'}
+        # output value widgets
+        self.input_value_map = [ {'pin': 2, 'widget': servo1_in_value},
+                                 {'pin': 3, 'widget': servo2_in_value},
+                                 {'pin': 4, 'widget': servo3_in_value},
+                                 {'pin': 5, 'widget': servo4_in_value},
+                                 {'pin': 6, 'widget': servo5_in_value},
+                                 {'pin': 7, 'widget': servo6_in_value},
+                                 {'pin': 8, 'widget': servo7_in_value},
+                                 {'pin': 9, 'widget': servo8_in_value},
+                                 {'pin': 11, 'widget':neopixel_in_value},
+                                 {'pin': 14, 'widget':rcc1_in_value},
+                                 {'pin': 15, 'widget':rcc2_in_value},
+                                 {'pin': 16, 'widget':rcc3_in_value},
+                                 {'pin': 17, 'widget':rcc4_in_value},
+                                ]
+        self.digital_to_analog_pin_map = {14: 0, 15:1, 16:2, 17:3 }
 
-    def incoming(self):
-        print('incoming')
-        root.after(1000, self.incoming)
+    def get_message(self):
+        """
+        This method is called from the tkevent loop "after" call.
+        It will poll for new zeromq messages within the tkinter event loop.
+        """
+        try:
+            data = self.subscriber.recv_multipart(zmq.NOBLOCK)
+            self.incoming_message_processing(data[0].decode(),
+                                             msgpack.unpackb(data[1],
+                                                             raw=False))
+            root.after(1, self.get_message)
+
+        except zmq.error.Again:
+            try:
+                root.after(1, self.get_message)
+            except KeyboardInterrupt:
+                root.destroy()
+                self.publisher.close()
+                self.subscriber.close()
+                self.context.term()
+                sys.exit(0)
+        except KeyboardInterrupt:
+            root.destroy()
+            self.publisher.close()
+            self.subscriber.close()
+            self.context.term()
+            sys.exit(0)
+
+    def incoming_message_processing(self, topic, payload):
+        if payload['report'] == 'analog_input':
+            # readjust pin to digital pin number
+            digital_pin = payload['pin'] + 14
+            # set the output widget value for this pin
+        else:
+            digital_pin = payload['pin']
+        entry = next(item for item in  self.input_value_map if item['pin'] == digital_pin)
+        widget = entry['widget']
+            # self.input_value_map[digital_pin].set(payload['value'])
+        widget.set(payload['value'])
+
+        print('incoming ', topic, payload)
 
     def set_pin_mode(self, pin, mode, slider_value_variable, slider_control):
         if mode in self.pin_mode_command_map.keys():
@@ -351,15 +409,20 @@ class BanyanGuiSupport(BanyanBase):
                 slider_control.configure(to=255)
             elif mode == '3':
                 slider_control.configure(to=180)
+            # transform digital pin number to analog pin number
+            elif mode == '6':
+                pin = self.digital_to_analog_pin_map[pin]
             # build pin mode message and transmit it
             payload = {'command': self.pin_mode_command_map[mode], 'pin': int(pin)}
             # print(payload)
             self.publish_payload(payload, 'to_robohat_gateway')
-            print('s')
         # output modes
         if mode in ['1', '2', '3']:
             value = int(slider_value_variable.get())
             self.slider_value_changed(pin, mode, value)
+
+
+
 
     def slider_value_changed(self, pin, mode, value):
         # digital output
