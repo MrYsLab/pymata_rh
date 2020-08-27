@@ -14,7 +14,7 @@
 #    Aug 23, 2020 01:46:51 PM EDT  platform: Linux
 #    Aug 23, 2020 03:33:05 PM EDT  platform: Linux
 #    Aug 23, 2020 03:44:20 PM EDT  platform: Linux
-#    Aug 23, 2020 03:45:05 PM EDT  platform: Linux
+#    Aug 23, 2020 03:45:05 PM EDT  platform: Linuxf
 #    Aug 23, 2020 04:20:00 PM EDT  platform: Linux
 #    Aug 23, 2020 04:30:56 PM EDT  platform: Linux
 #    Aug 24, 2020 06:51:01 PM EDT  platform: Linux
@@ -315,10 +315,24 @@ def mpu_start():
 
 def ina_read():
     print('pymata_rh_support.ina_read')
-    payload = {'command': 'ina_initialize'}
+    payload = {'command': 'initialize_ina'}
     bgs.publish_payload(payload, 'to_robohat_gateway')
-    # payload = {'command': 'read_mpu'}
-    # bgs.publish_payload(payload, 'to_robohat_gateway')
+
+    payload = {'command': 'get_ina_bus_voltage'}
+    bgs.publish_payload(payload, 'to_robohat_gateway')
+
+    payload = {'command': 'get_ina_bus_current'}
+    bgs.publish_payload(payload, 'to_robohat_gateway')
+
+    payload = {'command': 'get_supply_voltage'}
+    bgs.publish_payload(payload, 'to_robohat_gateway')
+
+    payload = {'command': 'get_shunt_voltage'}
+    bgs.publish_payload(payload, 'to_robohat_gateway')
+
+    payload = {'command': 'get_power'}
+    bgs.publish_payload(payload, 'to_robohat_gateway')
+
     sys.stdout.flush()
 
 def destroy_window():
@@ -410,6 +424,21 @@ class BanyanGuiSupport(BanyanBase):
 
             mpu_temp.set(payload['Temperature'])
             return
+
+        elif payload['report'] == 'ina':
+            value = payload['value']
+            if payload['param'] == 'V':
+                ina_bus_voltage.set(value)
+            elif payload['param'] == 'A':
+                ina_bus_current.set(value)
+            elif payload['param'] == 'Supply':
+                ina_supply_voltage.set(value)
+            elif payload['param'] =='Shunt':
+                ina_shunt_voltage.set(value)
+            elif payload['param'] == 'Power':
+                ina_power.set(value)
+            return
+
         elif payload['report'] == 'analog_input':
             # readjust pin to digital pin number
             digital_pin = payload['pin'] + 14
@@ -433,7 +462,7 @@ class BanyanGuiSupport(BanyanBase):
                 slider_control.configure(to=255)
             elif mode == '3':
                 slider_control.configure(to=180)
-            # transform digital pin number to analog pin number
+            # transfoinarm digital pin number to analog pin number
             elif mode == '6':
                 pin = self.digital_to_analog_pin_map[pin]
             # build pin mode message and transmit it

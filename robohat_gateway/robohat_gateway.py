@@ -398,7 +398,7 @@ class RoboHatGateway(GatewayBase):
         if data[2] == 0:
             payload = {'report': 'ina', 'param': 'V', 'value': cb_reported_value}
         elif data[2] == 1:
-            payload = {'report': 'ina', 'param': ' A', 'value': cb_reported_value}
+            payload = {'report': 'ina', 'param': 'A', 'value': cb_reported_value}
         elif data[2] == 2:
             payload = {'report': 'ina', 'param': 'Supply', 'value': cb_reported_value}
         elif data[2] == 3:
