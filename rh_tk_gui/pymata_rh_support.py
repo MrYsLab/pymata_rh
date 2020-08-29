@@ -20,6 +20,7 @@
 #    Aug 24, 2020 06:51:01 PM EDT  platform: Linux
 #    Aug 24, 2020 06:58:00 PM EDT  platform: Linux
 #    Aug 25, 2020 07:56:00 AM EDT  platform: Linux
+#    Aug 28, 2020 09:06:24 AM EDT  platform: Linux
 
 import sys
 import msgpack
@@ -85,14 +86,6 @@ def set_Tk_var():
     dht1_humidity = tk.StringVar()
     global dht1_temp
     dht1_temp = tk.StringVar()
-    global dht2_Pin
-    dht2_Pin = tk.StringVar()
-    global dht2_type
-    dht2_type = tk.StringVar()
-    global dht2_humidity
-    dht2_humidity = tk.StringVar()
-    global dht2_temp
-    dht2_temp = tk.StringVar()
     global dht1_combobox
     dht1_combobox = tk.StringVar()
     global combobox
@@ -194,92 +187,70 @@ def init(top, gui, *args, **kwargs):
 def servo1_mode_select():
     bgs.set_pin_mode(2, servo1_mode.get(), servo1_output_value, w.slider_servo1_out)
 
-
 def servo1_value_change(*args):
     bgs.slider_value_changed(2, servo1_mode.get(), int(args[0]))
-
 
 def servo2_mode_select():
     bgs.set_pin_mode(3, servo2_mode.get(), servo2_output_value, w.slider_servo2_out)
 
-
 def servo2_value_change(*args):
     bgs.slider_value_changed(3, servo2_mode.get(), int(args[0]))
-
 
 def servo3_mode_select():
     bgs.set_pin_mode(4, servo3_mode.get(), servo3_output_value, w.slider_servo3_out)
 
-
 def servo3_value_change(*args):
     bgs.slider_value_changed(4, servo3_mode.get(), int(args[0]))
-
 
 def servo4_mode_select():
     bgs.set_pin_mode(5, servo4_mode.get(), servo4_output_value, w.slider_servo4_out)
 
-
 def servo4_value_change(*args):
     bgs.slider_value_changed(5, servo4_mode.get(), int(args[0]))
-
 
 def servo5_mode_select():
     bgs.set_pin_mode(6, servo5_mode.get(), servo5_output_value, w.slider_servo5_out)
 
-
 def servo5_value_change(*args):
     bgs.slider_value_changed(6, servo5_mode.get(), int(args[0]))
-
 
 def servo6_mode_select():
     bgs.set_pin_mode(7, servo6_mode.get(), servo6_output_value, w.slider_servo6_out)
 
-
 def servo6_value_change(*args):
     bgs.slider_value_changed(7, servo6_mode.get(), int(args[0]))
-
 
 def servo7_mode_select():
     bgs.set_pin_mode(8, servo7_mode.get(), servo7_output_value, w.slider_servo7_out)
 
-
 def servo7_value_change(*args):
     bgs.slider_value_changed(8, servo7_mode.get(), int(args[0]))
-
 
 def servo8_mode_select():
     bgs.set_pin_mode(9, servo8_mode.get(), servo8_output_value, w.slider_servo8_out)
 
-
 def servo8_value_change(*args):
     bgs.slider_value_changed(9, servo8_mode.get(), int(args[0]))
-
 
 def led_mode_select():
     # mode is limited to digital out
     mode = '1'
     bgs.set_pin_mode(13, led_mode.get(), led_output_value, w.slider_led_out)
 
-
 def led_value_change(*args):
     bgs.slider_value_changed(13, led_mode.get(), int(args[0]))
-
 
 def neopixel_mode_select():
     bgs.set_pin_mode(11, neopixel_mode.get(), neopixel_output_value, w.slider_neopixel_out)
 
-
 def neopixel_value_change(*args):
     bgs.slider_value_changed(13, neopixel_mode.get(), int(args[0]))
-
 
 def rcc1_mode_select():
     bgs.set_pin_mode(14, rcc1_mode.get(), rcc1_output_value, w.slider_rcc1_out)
 
-
 def rcc1_value_change(*args):
     bgs.slider_value_changed(14, rcc1_mode.get(), int(args[0]))
-
 
 def rcc2_mode_select():
     bgs.set_pin_mode(15, rcc2_mode.get(), rcc2_output_value, w.slider_rcc2_out)
@@ -287,22 +258,17 @@ def rcc2_mode_select():
 def rcc2_value_change(*args):
     bgs.slider_value_changed(15, rcc2_mode.get(), int(args[0]))
 
-
 def rcc3_mode_select():
     bgs.set_pin_mode(16, rcc3_mode.get(), rcc3_output_value, w.slider_rcc3_out)
-
 
 def rcc3_value_change(*args):
     bgs.slider_value_changed(16, rcc3_mode.get(), int(args[0]))
 
-
 def rcc4_mode_select():
     bgs.set_pin_mode(17, rcc4_mode.get(), rcc4_output_value, w.slider_rcc4_out)
 
-
 def rcc4_value_change(*args):
     bgs.slider_value_changed(17, rcc4_mode.get(), int(args[0]))
-
 
 def mpu_start():
     print('pymata_rh_support.mpu_start')
@@ -334,6 +300,16 @@ def ina_read():
     bgs.publish_payload(payload, 'to_robohat_gateway')
 
     sys.stdout.flush()
+
+def dht_start():
+    bgs.start_dht(dht1_Pin.get(), dht1_type.get())
+    # print('pymata_rh_support.dht_start')
+    # print(dht1_Pin.get())
+    # print(dht1_type.get())
+    # sys.stdout.flush()
+
+def read_sonar():
+    bgs.start_sonar(triggerr_Pin.get(), echo_pin.get())
 
 def destroy_window():
     # Function which closes the window.
@@ -374,7 +350,27 @@ class BanyanGuiSupport(BanyanBase):
                                  {'pin': 16, 'widget':rcc3_in_value},
                                  {'pin': 17, 'widget':rcc4_in_value},
                                 ]
+
+        self.pin_name_map = {'Servo 1': 2, 'Servo 2': 3, 'Servo 3': 4,
+                             'Servo 4': 5, 'Servo 5': 6, 'Servo 6': 7,
+                             'Servo 7': 8, 'Servo 8': 9, 'NeoPixel': 11,
+                             'RCC 1': 14, 'RCC 2': 15, 'RCC 3': 16,
+                             'RCC 4': 17
+                             }
+
+        self.pin_mode_varible_map = {'Servo 1': servo1_mode, 'Servo 2': servo2_mode,
+                                    'Servo 3': servo3_mode, 'Servo 4': servo4_mode,
+                                    'Servo 5': servo5_mode, 'Servo 6': servo6_mode,
+                                    'Servo 7': servo7_mode, 'Servo 8': servo_mode,
+                                    'NeoPixel': neopixel_mode,
+                                    'RCC 1': rcc1_mode, 'RCC 2': rcc2_mode,
+                                    'RCC 3': rcc3_mode, 'RCC 4': rcc4_mode
+                                    }
         self.digital_to_analog_pin_map = {14: 0, 15:1, 16:2, 17:3 }
+        dht1_Pin.set('Servo 1')
+        dht1_type.set('DHT 22')
+        triggerr_Pin.set('Servo 1')
+        echo_pin.set('Servo 2')
 
         # flag to determine if we already intiialized the mpu
 
@@ -439,6 +435,16 @@ class BanyanGuiSupport(BanyanBase):
                 ina_power.set(value)
             return
 
+        elif payload['report'] == 'dht':
+            dht1_humidity.set(payload['humidity'])
+            dht1_temp.set(payload['temp'])
+            return
+
+        elif payload['report'] == 'sonar':
+            sonar_distance.set(payload['distance'])
+            return
+
+
         elif payload['report'] == 'analog_input':
             # readjust pin to digital pin number
             digital_pin = payload['pin'] + 14
@@ -451,6 +457,36 @@ class BanyanGuiSupport(BanyanBase):
         widget.set(payload['value'])
 
         print('incoming ', topic, payload)
+
+    def start_dht(self, pin, type):
+        # get the pin number based on the name
+        digital_pin = self.pin_name_map[pin]
+        # set pin mode for selected pin
+        self.pin_mode_varible_map[pin].set('7')
+
+        if type == 'DHT 11':
+            type = 11
+        else:
+            type = 22
+        payload = {'command': 'set_mode_dht', 'pin': digital_pin, 'type': type}
+        self.publish_payload(payload, 'to_robohat_gateway')
+
+        payload = {'command': 'dht_read', 'pin': digital_pin}
+        self.publish_payload(payload, 'to_robohat_gateway')
+
+    def start_sonar(self, trigger, echo):
+        self.pin_mode_varible_map[trigger].set('8')
+        self.pin_mode_varible_map[echo].set('8')
+
+        trigger = self.pin_name_map[trigger]
+        echo = self.pin_name_map[echo]
+
+
+        payload = {'command': 'set_mode_sonar', 'trigger': trigger, 'echo':echo}
+        self.publish_payload(payload, 'to_robohat_gateway')
+
+        # payload = {'command': 'dht_read', 'pin': digital_pin}
+        # self.publish_payload(payload, 'to_robohat_gateway')
 
     def set_pin_mode(self, pin, mode, slider_value_variable, slider_control):
         if mode in self.pin_mode_command_map.keys():
@@ -474,9 +510,6 @@ class BanyanGuiSupport(BanyanBase):
             value = int(slider_value_variable.get())
             self.slider_value_changed(pin, mode, value)
 
-
-
-
     def slider_value_changed(self, pin, mode, value):
         # digital output
         if mode == '1':
@@ -499,7 +532,6 @@ class BanyanGuiSupport(BanyanBase):
     def set_servo_angle(self, pin, value):
         payload = {'command': 'servo_position', 'pin': pin, 'position': value}
         self.publish_payload(payload, 'to_robohat_gateway')
-
 
 if __name__ == '__main__':
     import pymata_rh

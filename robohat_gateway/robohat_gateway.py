@@ -117,6 +117,14 @@ class RoboHatGateway(GatewayBase):
             self.robohat.ina_read_shunt_voltage()
         elif payload['command'] == 'get_power':
             self.robohat.ina_read_power()
+        elif payload['command'] == 'set_mode_dht':
+            self.robohat.set_pin_mode_dht(payload['pin'], payload['type'], callback=self.dht_callback)
+        elif payload['command'] == 'dht_read':
+            self.robohat.dht_read(payload['pin'])
+        # elif payload['command'] == 'set_mode_sonar':
+            self.robohat.set_pin_mode_sonar(payload['trigger'], payload['echo'],
+                                            callback = self.sonar_callback)
+
 
     def digital_write(self, topic, payload):
         """
@@ -312,7 +320,8 @@ class RoboHatGateway(GatewayBase):
         :param topic: message topic
         :param payload: message payload
         """
-        raise NotImplementedError
+        self.robohat.set_pin_mode_sonar(payload['trigger'], payload['echo'],
+                                        callback=self.sonar_callback)
 
     def set_mode_stepper(self, topic, payload):
         """
@@ -322,6 +331,7 @@ class RoboHatGateway(GatewayBase):
         :param payload: message payload
         """
         raise NotImplementedError
+
 
     def set_mode_tone(self, topic, payload):
         """
@@ -405,6 +415,14 @@ class RoboHatGateway(GatewayBase):
             payload = {'report': 'ina', 'param': 'Shunt', 'value': cb_reported_value}
         elif data[2] == 4:
             payload = {'report': 'ina', 'param': 'Power', 'value': cb_reported_value}
+        self.publish_payload(payload, 'from_robohat_gateway')
+
+    def dht_callback(self, data):
+        payload = {'report': 'dht', 'humidity': data[3], 'temp': data[4]}
+        self.publish_payload(payload, 'from_robohat_gateway')
+
+    def sonar_callback(self, data):
+        payload = {'report': 'sonar', 'pin': data[1], 'distance':data[2]}
         self.publish_payload(payload, 'from_robohat_gateway')
 
 
