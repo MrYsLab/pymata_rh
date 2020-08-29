@@ -19,7 +19,7 @@ except ImportError:
     import tkinter.ttk as ttk
     py3 = True
 
-import pymata_rh_support
+from rh_tk_gui import pymata_rh_support
 
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
