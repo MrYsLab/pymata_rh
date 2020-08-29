@@ -13,7 +13,7 @@ The Robo HAT MM1 is an open-source robotics controller board designed for Single
 Computers with standard 40pin GPIO(e.g., Raspberry Pi, Jetson Nano, etc.). It is best to allow Robotics Masters to tell
 [the Robot HAT MM1 story.](https://robohatmm1-docs.readthedocs.io/en/latest/)
 
-# What is pymata_rh? 
+# What is pymata-rh? 
 
 [Pymata_rh](https://github.com/MrYsLab/pymata_rh) is a Python 3 (Version 3.7 or above)  [Application Programming 
 Interface (API)](https://htmlpreview.github.com/?https://github.com/MrYsLab/pymata_rh/blob/master/html/pymata_rh/index.html)

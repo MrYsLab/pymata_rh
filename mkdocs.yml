@@ -20,6 +20,8 @@ nav:
         - Installing Pymata_Rh: install_pymata_rh.md
         - Installing FirmataExpress: firmata_express.md
         - Upgrading Pymata_rh To The Latest Version: upgrade.md
+    - Graphical Demo Program:
+        - Running The Demo: graph_demo.md
     - About: about.md
     - License: license.md
 # theme: windmill
