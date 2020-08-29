@@ -15,7 +15,7 @@
     
     
       
-        <title>Management Requests - pymata_rh</title>
+        <title>Gui screens - pymata_rh</title>
       
     
     
@@ -47,11 +47,6 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
-        
-        <a href="#remote-firmata-management" class="md-skip">
-          Skip to content
-        </a>
-      
     </div>
     <div data-md-component="announce">
       
@@ -76,7 +71,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Management Requests
+              Gui screens
             
           </span>
         </div>
@@ -160,12 +155,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
     
     <label class="md-nav__link" for="nav-2">
       The pymata_rh API
@@ -307,60 +300,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Management Requests
-        <span class="md-nav__icon md-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
-        </span>
-      </label>
-    
-    <a href="./" title="Management Requests" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../management/" title="Management Requests" class="md-nav__link">
       Management Requests
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#send_reset" class="md-nav__link">
-    send_reset
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#shutdown" class="md-nav__link">
-    shutdown
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -544,45 +488,6 @@
               </div>
             
             
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#send_reset" class="md-nav__link">
-    send_reset
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#shutdown" class="md-nav__link">
-    shutdown
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
@@ -592,37 +497,9 @@
                   
                 
                 
-                <h1 id="remote-firmata-management">Remote Firmata Management</h1>
-<p>The methods in this section allow your application to 
-perform some Firmata management functions remotely.</p>
-<h2 id="send_reset">send_reset</h2>
-<pre><code class="python"> def send_reset(self)
-
-    Send a Sysex reset command to the Robot HAT MM1
-</code></pre>
-
-<p><strong>Examples:</strong></p>
-<p>All examples call shutdown, which in turn calls send_reset.</p>
-<p><strong>Notes:</strong></p>
-<p>This command will reset several Firmata internal data structures. </p>
-<ul>
-<li>It resets its internal i2c flags to indicate there are no i2c devices present.</li>
-<li>Digital reporting is turned off.</li>
-<li>It resets any analog pin that was set to a digital mode back to analog mode.</li>
-<li>If a pin was configured for tone, the tone is turned off.</li>
-<li>It clears all servo entries from its servo map.</li>
-<li>It sets the number of active sonar devices to zero.</li>
-</ul>
-<p>The shutdown method calls <em>send_reset</em>.</p>
-<h2 id="shutdown">shutdown</h2>
-<pre><code class="python"> def shutdown(self)
-
-    This method attempts an orderly shutdown.
-    If any exceptions are thrown, they are ignored.
-</code></pre>
-
-<p><strong>Examples:</strong></p>
-<p>All the examples call shutdown.</p>
+                  <h1>Gui screens</h1>
+                
+                <p>The Tkinter Graphical Interface Demo</p>
 <p><br>
 <br></p>
 <p>Copyright (C) 2020 Alan Yorinks. All Rights Reserved.</p>
@@ -640,41 +517,6 @@ perform some Firmata management functions remotely.</p>
       
         
 <footer class="md-footer">
-  
-    <div class="md-footer-nav">
-      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
-        
-          <a href="../report_requests/" title="Report Requests" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
-            <div class="md-footer-nav__button md-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-            </div>
-            <div class="md-footer-nav__title">
-              <div class="md-ellipsis">
-                <span class="md-footer-nav__direction">
-                  Previous
-                </span>
-                Report Requests
-              </div>
-            </div>
-          </a>
-        
-        
-          <a href="../exceptions/" title="Exceptions" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-footer-nav__title">
-              <div class="md-ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
-                Exceptions
-              </div>
-            </div>
-            <div class="md-footer-nav__button md-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-            </div>
-          </a>
-        
-      </nav>
-    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
