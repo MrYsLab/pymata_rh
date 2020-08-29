@@ -29,6 +29,7 @@ import signal
 import sys
 
 
+# noinspection PyAbstractClass
 class RoboHatGateway(GatewayBase):
     """
     This is a good starting point for creating your own Banyan GPIO Gateway
@@ -121,10 +122,8 @@ class RoboHatGateway(GatewayBase):
             self.robohat.set_pin_mode_dht(payload['pin'], payload['type'], callback=self.dht_callback)
         elif payload['command'] == 'dht_read':
             self.robohat.dht_read(payload['pin'])
-        # elif payload['command'] == 'set_mode_sonar':
             self.robohat.set_pin_mode_sonar(payload['trigger'], payload['echo'],
-                                            callback = self.sonar_callback)
-
+                                            callback=self.sonar_callback)
 
     def digital_write(self, topic, payload):
         """
@@ -332,7 +331,6 @@ class RoboHatGateway(GatewayBase):
         """
         raise NotImplementedError
 
-
     def set_mode_tone(self, topic, payload):
         """
         Must be overwritten by the hardware gateway class.
@@ -422,7 +420,7 @@ class RoboHatGateway(GatewayBase):
         self.publish_payload(payload, 'from_robohat_gateway')
 
     def sonar_callback(self, data):
-        payload = {'report': 'sonar', 'pin': data[1], 'distance':data[2]}
+        payload = {'report': 'sonar', 'pin': data[1], 'distance': data[2]}
         self.publish_payload(payload, 'from_robohat_gateway')
 
 
