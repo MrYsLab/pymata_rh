@@ -39,6 +39,13 @@ except ImportError:
     import tkinter.ttk as ttk
     py3 = True
 
+# added by Alan
+#from tkinter import messagebox  # Changed by Rozen.
+if py3:
+    from tkinter import messagebox
+else:
+    import tkMessageBox as messagebox
+
 def set_Tk_var():
     global dummy
     dummy = tk.StringVar()
@@ -481,7 +488,9 @@ class BanyanGuiSupport(BanyanBase):
         trigger = self.pin_name_map[trigger]
         echo = self.pin_name_map[echo]
 
-
+        if trigger == echo:
+            messagebox.showerror("Pin Selection Error", "Both Pins Cannot Be The Same!")
+            return
         payload = {'command': 'set_mode_sonar', 'trigger': trigger, 'echo':echo}
         self.publish_payload(payload, 'to_robohat_gateway')
 
