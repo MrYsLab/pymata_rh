@@ -42,7 +42,7 @@ provides support for:
 
 **NOTE: ** You may need to connect a power supply that provides adequate current capacity for your application.
 
-A Demo GUI is included. After install pymata-rh, open a terminal window and type: rhdemo
+**A Demo GUI is included**. After installing pymata-rh, open a terminal window and type: rhdemo
 
 ![](https://github.com/MrYsLab/pymata_rh/blob/master/docs/images/tkgui.png)
 
