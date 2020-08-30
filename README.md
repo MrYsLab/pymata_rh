@@ -44,6 +44,8 @@ provides support for:
 
 **A Demo GUI is included**. After installing pymata-rh, open a terminal window and type: rhdemo
 
+Use the GUI to control the RoboHAT without writing one line of code!
+
 ![](https://github.com/MrYsLab/pymata_rh/blob/master/docs/images/tkgui.png)
 
 ## Implemented Using The Firmata Protocol
