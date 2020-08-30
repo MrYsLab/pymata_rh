@@ -5,7 +5,7 @@ with open('pypi_desc.md') as f:
 
 setup(
     name='pymata_rh',
-    version='1.1',
+    version='1.2',
     packages=[
         'rh_tk_gui',
         'pymata_rh',
@@ -14,6 +14,7 @@ setup(
 
     install_requires=[
         'python-banyan>=3.9',
+        'pyserial'
     ],
     entry_points={
         'console_scripts': [
