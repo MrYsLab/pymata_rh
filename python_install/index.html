@@ -552,7 +552,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../graph_demo/" title="Running The Demo" class="md-nav__link">
+    <a href="../graph_demo.md" title="Running The Demo" class="md-nav__link">
       Running The Demo
     </a>
   </li>
@@ -719,6 +719,15 @@ and download the latest Python 3 distribution for your operating system.</p>
 
 <p>You should then make sure you have the latest version by typing:</p>
 <pre><code class="python">sudo pip3 install -U pip
+
+</code></pre>
+
+<p>To communicate with the RoboHAT, you may need to add your login to the dialout group. To do so, type the following:</p>
+<pre><code>sudo adduser $USER dialout
+</code></pre>
+
+<p>Also, you may need to add tkinter for the GUI demo to work. To add tkinter, type the following:</p>
+<pre><code>sudo apt-get install python3-tk 
 </code></pre>
 
 <h4 id="for-all-other-linux-distributions">For All Other Linux Distributions</h4>
