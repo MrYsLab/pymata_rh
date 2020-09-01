@@ -31,8 +31,18 @@ Open a terminal window and type:
 You should then make sure you have the latest version by typing:
 ```python
 sudo pip3 install -U pip
+
 ```
 
+To communicate with the RoboHAT, you may need to add your login to the dialout group. To do so, type the following:
+```
+sudo adduser $USER dialout
+```
+
+Also, you may need to add tkinter for the GUI demo to work. To add tkinter, type the following:
+```
+sudo apt-get install python3-tk 
+```
 #### For All Other Linux Distributions
 
 Refer to your distribution's instructions.
