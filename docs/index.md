@@ -161,4 +161,4 @@ Pin: 2 Value: 1 Time Stamp: 2020-03-10 13:26:27
 
 Copyright (C) 2020 Alan Yorinks. All Rights Reserved.
 
-**Last updated 01 September 2020 For Release v1.2**
+**Last updated 02 September 2020 For Release v1.2**

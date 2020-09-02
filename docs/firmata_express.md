@@ -12,11 +12,9 @@
 <p>3. Click on the Install button.</p>
 
 
-<p> 4. FirmataExpress also requires that the Ultrasonic library
-by Erick Simões be installed.</p>
-Using the Arduino IDE, install the [ultrasonic library](https://github.com/ErickSimoes/Ultrasonic). Click on Tools/Manage Libraries
-and select Ultrasonic and then click Install.
-<img src="../images/Ultrasonic.png">
+<p>4. A dialog box will open prompting you to install the Ultrasonic library.
+This library is required by FirmataExpress, so select "Install all".</p>
+<img src="../images/firmataexpress2.png">
 
 When pymata_rh is instantiated, the version of FirmataExpress is checked for
 compatibility. If an incompatible version is found,
