@@ -550,6 +550,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#running-the-gui-remotely" class="md-nav__link">
+    Running The GUI Remotely
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -674,6 +681,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#running-the-gui-remotely" class="md-nav__link">
+    Running The GUI Remotely
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -708,17 +722,17 @@ All features are supported for all pins that support the feature.</p>
 <p><img alt="" src="../images/gui1.png" /> </p>
 <p>You can set a Servo pin for digital output on this first screen and set the output 
 value to a zero or a 
-one by using the associated slider on the right side. Except for Servo 
+one using the associated slider on the right side. Except for Servo 
 pins 3 and 4, you can set the PWM output 
 value between 0 and 255 for each pin.  Lastly, you can attach a servo to any 
-of the pins and adjust the servo angle to between 0 and 180 degrees.</p>
+of the pins and adjust the servo angle between 0 and 180 degrees.</p>
 <h2 id="rccneopixelled-out">RCC/NeoPixel/LED Out</h2>
 <p><img alt="" src="../images/gui2.png" /> </p>
 <p>This screen is very similar to the first screen but allows you to control digital output
 for the RCC pins, the NeoPixel pin, and the Board LED. </p>
 <p>The RCC pins do not support PWM, the NeoPixel pin supports all
  modes, and the LED can only be turned on or off.</p>
-<p><strong>NOTE:</strong> Pytmata-rh does not support direct control of NeoPixel devices, it just uses that pin
+<p><strong>NOTE:</strong> Pytmata-rh does not support direct control of NeoPixel devices. It just uses that pin
 as a standard digital pin.</p>
 <h2 id="digitalanalog-input">Digital/Analog Input</h2>
 <p><img alt="" src="../images/gui3.png" /> </p>
@@ -728,7 +742,7 @@ pin. The values displayed are continually being updated in real-time.</p>
 <p><img alt="" src="../images/gui4.png" /> 
 This screen allows you to monitor both the humidity and temperature reported by a DHT 11 or 
 DHT 22 device. Before pressing the button to monitor the DHT, select its connected pin and device
-type using the provided GUI widgets. 
+type using GUI widget controls. 
  Shortly after pressing the button
 to start DHT monitoring, continuously updated and displayed on the right.</p>
 <h2 id="sonar">Sonar</h2>
@@ -748,7 +762,51 @@ The RoboHAT MM1 includes an INA219 voltage/current/power monitoring device. Shor
 pressing the button to start monitoring, this display
 will provide an updated view of the various parameters the INA219 provides. For updates,
 you must press the button.</p>
-<p><br>
+<h2 id="running-the-gui-remotely">Running The GUI Remotely</h2>
+<p>Optionally you may run the GUI portion of the demo on a remote computer.</p>
+<p><img alt="" src="../images/remote_gui.png" /> </p>
+<p>In the illustration above, <em>rhdemo</em> is running on the Raspberry Pi, and a second
+copy of the GUI is running on a <em>remote PC</em>.</p>
+<p>Here are the steps to make this work.</p>
+<ul>
+<li>
+<p>Download the <a href="https://github.com/MrYsLab/pymata_rh">latest version of pymata_rh on GitHub.</a>
+Click the green button on the GitHub page to download.</p>
+</li>
+<li>
+<p>Determine the IP address used by the backplane.</p>
+</li>
+</ul>
+<p>To do this, open a terminal window and type:</p>
+<pre><code>backplane
+</code></pre>
+
+<p><img alt="" src="../images/backplane2.png" /></p>
+<p>Note the IP address, then close this window to dismiss the backplane.</p>
+<ul>
+<li>
+<p>Open a new terminal on the Raspberry Pi and type <em>rhdemo</em>. </p>
+</li>
+<li>
+<p>On your PC, after unzipping the pymata-rh repository, 
+ CD into the pymata_rh-master/rh_tk_gui directory.  </p>
+</li>
+<li>
+<p>Start the GUI on your PC using the following command. Substitute
+<strong>BACKPLANE_IP_ADDRESS</strong> with the IP address you noted in step 2.</p>
+</li>
+</ul>
+<p>For Windows:</p>
+<pre><code>python pymata_rh.py BACKPLANE_IP_ADDRESS
+</code></pre>
+
+<p>For Linux and macOS:</p>
+<pre><code>python3 pymata_rh.py BACKPLANE_IP_ADDRESS
+</code></pre>
+
+<p>You may close the GUI on the Raspberry Pi if you wish. Both GUIs have access to the RoboHAT
+if left open.
+<br>
 <br></p>
 <p>Copyright (C) 2020 Alan Yorinks. All Rights Reserved.</p>
                 
