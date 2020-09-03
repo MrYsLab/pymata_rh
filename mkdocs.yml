@@ -19,6 +19,7 @@ nav:
         - Python 3 Installation: python_install.md
         - Installing Pymata_Rh: install_pymata_rh.md
         - Installing FirmataExpress: firmata_express.md
+        - Connecting The RoboHAT MM1 To A Raspberry Pi: connect.md
         - Upgrading Pymata_rh To The Latest Version: upgrade.md
     - Graphical Demo Program:
         - Running The Demo: graph_demo.md
