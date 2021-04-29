@@ -1,7 +1,7 @@
 # What is pymata_rh? 
 
 [Pymata_rh](https://github.com/MrYsLab/pymata_rh) is a Python 3 (Version 3.7 or above)  [Application Programming 
-Interface (API).](https://htmlpreview.github.com/?https://github.com/MrYsLab/pymata_rh/blob/master/html/pymata_rh/index.html)
+Interface (API).](https://htmlpreview.github.io/?https://github.com/MrYsLab/pymata_rh/blob/master/html/pymata_rh/index.html)
 It is Windows, macOS and, Linux compatible, allowing you to easily create Python scripts to control and monitor the 
 [Robo HAT MM1.](https://www.roboticsmasters.co/pages/robo-hat-mm1/)
 
