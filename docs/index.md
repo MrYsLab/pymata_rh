@@ -16,7 +16,7 @@ Computers with standard 40pin GPIO(e.g., Raspberry Pi, Jetson Nano, etc.). It is
 # What is pymata-rh? 
 
 [Pymata_rh](https://github.com/MrYsLab/pymata_rh) is a Python 3 (Version 3.7 or above)  [Application Programming 
-Interface (API)](https://htmlpreview.github.com/?https://github.com/MrYsLab/pymata_rh/blob/master/html/pymata_rh/index.html)
+Interface (API)](https://htmlpreview.github.io/?https://github.com/MrYsLab/pymata_rh/blob/master/html/pymata_rh/index.html)
 for programming the Robo HAT MM1.
 It is Windows, macOS, and Linux compatible.
 

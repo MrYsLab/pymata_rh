@@ -112,7 +112,7 @@ A callback function is specified to accept a single input parameter, typically n
 
 A description of what is contained in the list
 is provided in the 
-[reference API.](https://htmlpreview.github.com/?https://github.com/MrYsLab/pymata_rh/blob/master/html/pymata_rh/index.html) 
+[reference API.](https://htmlpreview.github.io/?https://github.com/MrYsLab/pymata_rh/blob/master/html/pymata_rh/index.html) 
 
 ```python
 def my_callback(data):
